@@ -7,9 +7,15 @@ import { isAttentionCheck } from "../utils/utils.js";
 function drawArrows() {
   globalState.objects.forEach((object) => {
     if (!object.isIntercepted) {
-      const arrowLength =
-        object.speed * globalState.speedMultiplier * ARROW_FACTOR; // Scale speed for arrow length
-      const angle = Math.atan2(object.dY, object.dX);
+      // Use current velocity if the animation step set it; fall back to initial
+      const vx = object.currDX ?? object.dX;
+      const vy = object.currDY ?? object.dY;
+
+      // Per-frame speed is hypot(vx, vy); this equals your original speed scalar
+      const speedNow = Math.hypot(vx, vy);
+      const arrowLength = speedNow * globalState.speedMultiplier * ARROW_FACTOR;
+
+      const angle = Math.atan2(vy, vx);
 
       const startX = object.x;
       const startY = object.y;
@@ -99,7 +105,7 @@ export function drawObjects() {
       // Draw the object's filled area
       ctx.beginPath();
       ctx.arc(object.x, object.y, object.radius * object.value, 0, Math.PI * 2);
-      ctx.fillStyle = "red";
+      ctx.fillStyle = object.colorFill || object.color || 'red';
       ctx.fill();
 
       // Set text alignment and baseline for centering
@@ -117,7 +123,7 @@ export function drawObjects() {
       ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
       ctx.lineWidth = 3;
       //ctx.fillStyle = 'rgba(14, 13, 13, 0.3)'; // Glow effect
-      ctx.strokeStyle = "red";
+      ctx.strokeStyle = object.colorStroke || object.color || 'red';
       ctx.stroke();
       //ctx.fill();
 

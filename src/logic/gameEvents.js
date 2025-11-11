@@ -342,6 +342,17 @@ function restoreReplayUI() {
   replayButton.disabled = false;
 }
 
+export function setBallColorByIndex(ballIndex, fill = "blue", stroke = fill) {
+  const obj = globalState.objects.find(o => o.index === ballIndex);
+  if (!obj) return;
+
+  obj.colorFill = fill;
+  obj.colorStroke = stroke;
+
+  // If you don't have a continuous animation loop running, force a redraw:
+  redrawAll();
+}
+
 /*
 --------------------------------------------------------------------------------------
 
@@ -351,6 +362,9 @@ function restoreReplayUI() {
 */
 export function startInterception() {
   hideInterceptionControls();
+  // Reset per-run penalty counter
+  globalState.penaltyPoints = 0;
+  
   computeUserSolution();
   resetInterceptionState();
   updateInterceptionInfo();

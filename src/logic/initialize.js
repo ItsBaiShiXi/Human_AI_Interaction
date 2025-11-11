@@ -9,6 +9,16 @@ import { globalState } from "../data/variable.js";
 import { sampleBeta, isAttentionCheck } from "../utils/utils.js";
 import educate1Objects from "../data/educate1_objects.json";
 import educate2Objects from "../data/educate2_objects.json";
+import { BALL_TYPES } from "../data/constant.js";
+
+function pickBallType(rngFn) {
+  const random = (typeof rngFn === "function") ? rngFn : Math.random;
+  const p = random();
+  if (p < 0.15) return 'blue';
+  if (p < 0.30) return 'green_turner';
+  if (p < 0.40) return 'gray_hazard';
+  return 'normal';
+}
 
 export function initializeObjects(isComprehensionCheck, needRetry) {
   globalState.selectedObjects = []; // Reset selections
@@ -57,52 +67,74 @@ export function initializeObjects(isComprehensionCheck, needRetry) {
 /**
  * Creates two special objects that move toward the center.
  */
-function createSpecialObjects(specialSpeed, offset) {
-  const specialObjects = [
-    {
-      x0: globalState.centerX - offset,
-      dX: specialSpeed,
-      y0: globalState.centerY,
-      dY: -0.5,
-    },
-    {
-      x0: globalState.centerX + offset,
-      dX: -specialSpeed,
-      y0: globalState.centerY,
-      dY: -0.5,
-    },
-  ];
+// function createSpecialObjects(specialSpeed, offset) {
+//   const specialObjects = [
+//     {
+//       x0: globalState.centerX - offset,
+//       dX: specialSpeed,
+//       y0: globalState.centerY,
+//       dY: -0.5,
+//     },
+//     {
+//       x0: globalState.centerX + offset,
+//       dX: -specialSpeed,
+//       y0: globalState.centerY,
+//       dY: -0.5,
+//     },
+//   ];
 
-  for (let i = 0; i < 2; i++) {
-    let x0,
-      y0,
-      dX,
-      dY = specialObjects[i];
+//   for (let i = 0; i < 2; i++) {
+//     let x0,
+//       y0,
+//       dX,
+//       dY = specialObjects[i];
 
-    globalState.objects.push({
-      x0,
-      y0,
-      x: x0,
-      y: y0,
-      radius: 15,
-      speed: specialSpeed,
-      dX,
-      dY,
-      value: 0.7, // High priority objects
-      isSelected: false,
-      selectionIndex: NaN,
-      isIntercepted: false,
-      index: i,
-    });
-  }
-}
+//     globalState.objects.push({
+//       x0,
+//       y0,
+//       x: x0,
+//       y: y0,
+//       radius: 15,
+//       speed: specialSpeed,
+//       dX,
+//       dY,
+//       value: 0.7, // High priority objects
+//       isSelected: false,
+//       selectionIndex: NaN,
+//       isIntercepted: false,
+//       index: i,
+//     });
+//   }
+// }
 
 function adjustObjectForRefreshRate(obj) {
+  const dX = obj.dX / globalState.speedMultiplier;
+  const dY = obj.dY / globalState.speedMultiplier;
+
   return {
     ...obj,
-    speed: obj.speed / globalState.speedMultiplier,
-    dX: obj.dX / globalState.speedMultiplier,
-    dY: obj.dY / globalState.speedMultiplier,
+    dX, dY,
+    speed: Math.hypot(dX, dY),
+
+    // ensure immutable kinematics exist
+    initX0: obj.initX0 ?? obj.x0,
+    initY0: obj.initY0 ?? obj.y0,
+    initDX: obj.initDX != null ? obj.initDX / globalState.speedMultiplier : dX,
+    initDY: obj.initDY != null ? obj.initDY / globalState.speedMultiplier : dY,
+
+    // sensible defaults so solver/animation don’t crash
+    type: obj.type ?? 'normal',                // or BALL_TYPES.NORMAL
+    turnAfterFrames: obj.turnAfterFrames ?? null,
+    turnStrategy: obj.turnStrategy ?? null,
+    turnAngle: obj.turnAngle ?? null,
+
+    isHazard: obj.isHazard ?? false,
+    penaltyAmount: obj.penaltyAmount ?? 0,
+    penaltyCooldownFrames: obj.penaltyCooldownFrames ?? 0,
+    penaltyLastAppliedAt: obj.penaltyLastAppliedAt ?? -Infinity,
+
+    colorFill: obj.colorFill ?? 'red',
+    colorStroke: obj.colorStroke ?? 'red',
   };
 }
 
@@ -120,13 +152,17 @@ function generateRandomObject(isEasyMode) {
     let randomRadius =
       globalState.randomGenerator() * (GAME_RADIUS * 0.6) + GAME_RADIUS / 3;
     let randomStartAngle = globalState.randomGenerator() * Math.PI * 2;
-    speed = randomSpeed / globalState.refreshRate;
+
+    const perFrame = randomSpeed / globalState.refreshRate;
 
     x0 = globalState.centerX + Math.cos(randomStartAngle) * randomRadius;
     y0 = globalState.centerY + Math.sin(randomStartAngle) * randomRadius;
 
-    dx = speed * Math.cos(randomDirection);
-    dy = speed * Math.sin(randomDirection);
+    dx = perFrame * Math.cos(randomDirection);
+    dy = perFrame * Math.sin(randomDirection);
+
+    // make speed reflect the actual per-frame velocity
+    speed = Math.hypot(dx, dy);
 
     // Predict final position to ensure it stays inside bounds
     const finalx = x0 + dx * globalState.OBSERVATION_FRAMES;
@@ -140,6 +176,41 @@ function generateRandomObject(isEasyMode) {
 
   let value = sampleBeta(alphaParam, betaParam); // Random value between 0 and 1
   if (isEasyMode) value *= 0.5; // Ensure value < 0.5 for easy mode
+
+  const type = pickBallType(globalState.randomGenerator);
+  let colorFill = 'red';
+  let colorStroke = 'red';
+  let hasTurned = false;
+  let turnAfterFrames = null;
+  let turnStrategy = null;
+  let turnAngle = null;
+  let isHazard = false;
+  let penaltyAmount = 0;
+  let penaltyCooldownFrames = 0;
+
+  switch (type) {
+    case 'blue':
+      colorFill = colorStroke = '#2b6fff';
+      break;
+
+    case 'green_turner':
+      colorFill = colorStroke = '#22aa55';
+      turnAfterFrames = Math.round(2 * globalState.refreshRate);
+      turnStrategy = 'reverse'; // or 'rotate90' | 'random'
+      if (turnStrategy === 'random') {
+        turnAngle = globalState.randomGenerator() * Math.PI * 2;  // store once
+      }
+      break;
+
+    case 'gray_hazard':
+      colorFill = colorStroke = '#888888';
+      isHazard = true;
+      penaltyAmount = 0.1;
+      penaltyCooldownFrames = Math.round(0.5 * globalState.refreshRate); // immune for 0.5s after hit
+      break;
+
+    // normal default red
+  }
 
   return {
     x0,
@@ -155,6 +226,31 @@ function generateRandomObject(isEasyMode) {
     selectionIndex: NaN,
     isIntercepted: false,
     index: globalState.objects.length, // Assign index dynamically
+
+    // NEW: immutable initial state used for stateless position calc
+    initX0: x0,
+    initY0: y0,
+    initDX: dx,
+    initDY: dy,
+    
+    // NEW: type and behavior scaffolding
+    type,
+    birthFrame: 0,              // used by behaviors
+    segmentStartFrame: 0,       // used by piecewise motion
+    hasTurned,           // for one-shot turners
+    turnAfterFrames,      // set below for turners
+    turnStrategy,         // 'reverse' | 'rotate90' | 'random'
+    turnAngle,            // angle for random turners
+
+    // NEW: hazard-specific
+    isHazard,            // convenience flag
+    penaltyAmount,           // points deducted on contact
+    penaltyCooldownFrames,   // to prevent rapid multiple hits
+    penaltyLastAppliedAt: -Infinity,
+
+    // NEW: colors
+    colorFill,
+    colorStroke,
   };
 }
 

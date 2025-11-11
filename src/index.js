@@ -169,6 +169,13 @@ async function startExperiment(skipConsent = false, skipEducation = false) {
     );
     await saveOrUpdateUser(getCurrentDate());
 
+if (globalState.isDebugMode) {
+  console.log("Debug mode enabled: Skipping consent and education trials.");
+      skipConsent = true;
+      skipEducation = true;
+    }
+
+
     if (!skipConsent) {
       showConsent();
       return;

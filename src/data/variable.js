@@ -63,6 +63,14 @@ export const globalState = {
   interceptionCounter: 0,
   interceptionFrame: 0,
 
+  // --- penalties (for gray hazards) ---
+  penaltyPoints: 0,          // REQUIRED
+  // Optional helpers:
+  penaltyHits: 0,
+  lastPenaltyAtFrame: -1,
+  penaltyFlashFrames: 12,
+  penalties: [],
+
   canShowAIAnswer: false,
 
   demoPlayTimes: 0,
