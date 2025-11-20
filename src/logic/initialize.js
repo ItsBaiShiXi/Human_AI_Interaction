@@ -14,9 +14,9 @@ import { BALL_TYPES } from "../data/constant.js";
 function pickBallType(rngFn) {
   const random = (typeof rngFn === "function") ? rngFn : Math.random;
   const p = random();
-  if (p < 0.15) return 'blue';
-  if (p < 0.30) return 'green_turner';
-  if (p < 0.40) return 'gray_hazard';
+  //if (p < 0.15) return 'blue';
+  if (p < 1.0) return 'green_turner';
+  // if (p < 0.40) return 'gray_hazard';
   return 'normal';
 }
 
@@ -63,49 +63,6 @@ export function initializeObjects(isComprehensionCheck, needRetry) {
     }
   }
 }
-
-/**
- * Creates two special objects that move toward the center.
- */
-// function createSpecialObjects(specialSpeed, offset) {
-//   const specialObjects = [
-//     {
-//       x0: globalState.centerX - offset,
-//       dX: specialSpeed,
-//       y0: globalState.centerY,
-//       dY: -0.5,
-//     },
-//     {
-//       x0: globalState.centerX + offset,
-//       dX: -specialSpeed,
-//       y0: globalState.centerY,
-//       dY: -0.5,
-//     },
-//   ];
-
-//   for (let i = 0; i < 2; i++) {
-//     let x0,
-//       y0,
-//       dX,
-//       dY = specialObjects[i];
-
-//     globalState.objects.push({
-//       x0,
-//       y0,
-//       x: x0,
-//       y: y0,
-//       radius: 15,
-//       speed: specialSpeed,
-//       dX,
-//       dY,
-//       value: 0.7, // High priority objects
-//       isSelected: false,
-//       selectionIndex: NaN,
-//       isIntercepted: false,
-//       index: i,
-//     });
-//   }
-// }
 
 function adjustObjectForRefreshRate(obj) {
   const dX = obj.dX / globalState.speedMultiplier;
@@ -195,10 +152,10 @@ function generateRandomObject(isEasyMode) {
 
     case 'green_turner':
       colorFill = colorStroke = '#22aa55';
-      turnAfterFrames = Math.round(2 * globalState.refreshRate);
-      turnStrategy = 'reverse'; // or 'rotate90' | 'random'
-      if (turnStrategy === 'random') {
-        turnAngle = globalState.randomGenerator() * Math.PI * 2;  // store once
+      const shouldTurn = globalState.randomGenerator() < 0.50; // 50% chance to turn
+      if (shouldTurn) {
+        turnAfterFrames = Math.round(3.5 * globalState.refreshRate);
+        turnStrategy = 'reverse'; // Only 180° turns allowed
       }
       break;
 
@@ -210,6 +167,25 @@ function generateRandomObject(isEasyMode) {
       break;
 
     // normal default red
+  }
+
+  // If green turner will exit arena BEFORE its turn time, disable the turn
+  if (type === 'green_turner' && turnAfterFrames) {
+    // Calculate position at turn time
+    const posAtTurn_x = x0 + dx * turnAfterFrames;
+    const posAtTurn_y = y0 + dy * turnAfterFrames;
+    const distAtTurn = Math.sqrt(
+      (posAtTurn_x - globalState.centerX) ** 2 + 
+      (posAtTurn_y - globalState.centerY) ** 2
+    );
+    
+    // If ball will be outside or very close to edge at turn time, disable turn
+    if (distAtTurn >= GAME_RADIUS - 20) {
+      turnAfterFrames = null;
+      turnStrategy = null;
+      turnAngle = null;
+      // Ball will just continue straight out of arena
+    }
   }
 
   return {
@@ -239,8 +215,8 @@ function generateRandomObject(isEasyMode) {
     segmentStartFrame: 0,       // used by piecewise motion
     hasTurned,           // for one-shot turners
     turnAfterFrames,      // set below for turners
-    turnStrategy,         // 'reverse' | 'rotate90' | 'random'
-    turnAngle,            // angle for random turners
+    turnStrategy,         // always 'reverse' for 180° turns
+    turnAngle,            // not used (kept for compatibility)
 
     // NEW: hazard-specific
     isHazard,            // convenience flag

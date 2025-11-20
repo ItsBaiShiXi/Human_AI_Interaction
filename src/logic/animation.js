@@ -22,7 +22,6 @@ export function animateObjects() {
 }
 
 export function animateInterception() {
-  // Update positions and redraw
   updateObjectPositions(globalState.totalFrames);
   let status = updatePlayerPosition();
   
@@ -30,18 +29,14 @@ export function animateInterception() {
   applyHazardPenalties(globalState.totalFrames);
 
   redrawAll();
-
-  // Increment frame counter
   globalState.totalFrames++;
 
-  // Is the player still within the game area?
   let isInCircle =
     Math.sqrt(
       (globalState.player.x - globalState.centerX) ** 2 +
         (globalState.player.y - globalState.centerY) ** 2
     ) <= GAME_RADIUS;
 
-  // Continue animation or end interception sequence
   if (isInCircle && status == "in progress") {
     globalState.animationFrameId = requestAnimationFrame(animateInterception);
   } else {
@@ -91,36 +86,33 @@ function updateObjectPositions(frame) {
 
 // helper
 function applyTurnStrategy(dX, dY, strategy) {
-  switch (strategy) {
-    case 'reverse':   return { dX: -dX, dY: -dY }; // 180°
-    case 'rotate90':  return { dX: -dY, dY:  dX }; // +90°
-    case 'random': {
-      const speed = Math.hypot(dX, dY);
-      const angle = Math.atan2(dY, dX) + Math.PI * 0.73;  // fake random
-      return { dX: speed * Math.cos(angle), dY: speed * Math.sin(angle) };
-    }
-    default:          return { dX, dY };
+  // Only 'reverse' (180°) turns are used in the experiment
+  if (strategy === 'reverse') {
+    return { dX: -dX, dY: -dY };
   }
+  // Default: no turn (shouldn't happen, but safe fallback)
+  return { dX, dY };
 }
 
 function updatePlayerPosition() {
-  let currentMove =
-    globalState.userSolution.moves[globalState.interceptionCounter]; // object that contains all information for intercepting the current object
-  let currentObject =
-    globalState.userSolution.sequence[globalState.interceptionCounter];
+  // object that contains all information for intercepting the current object
+  let currentMove = globalState.userSolution.moves[globalState.interceptionCounter]; 
   globalState.interceptionFrame += 1;
 
   let status = "in progress";
   if (globalState.interceptionFrame == currentMove.timeToIntercept) {
-    globalState.objects[currentObject].isIntercepted = currentMove.success;
-    globalState.interceptionFrame = 0; // reset counter for the next object
-    globalState.interceptionCounter += 1;
+    if (currentMove.isFinalForTarget) {
+      const objIdx = currentMove.targetObjectId;
+      if (Number.isInteger(objIdx) && globalState.objects[objIdx]) {
+        globalState.objects[objIdx].isIntercepted = currentMove.success;
+      }
+    }
 
-    if (
-      globalState.interceptionCounter < globalState.userSolution.moves.length
-    ) {
-      currentMove =
-        globalState.userSolution.moves[globalState.interceptionCounter];
+    globalState.interceptionFrame = 0;
+    globalState.interceptionCounter += 1;
+  
+    if (globalState.interceptionCounter < globalState.userSolution.moves.length) {
+      currentMove = globalState.userSolution.moves[globalState.interceptionCounter];
     } else {
       status = "finished";
       return status;
@@ -149,14 +141,19 @@ function applyHazardPenalties(frame) {
 
     // basic circle overlap
     if (dist <= pr + or) {
+      // Check cooldown, if any (currently 0 cold down)
       const cooldownOk = (frame - obj.penaltyLastAppliedAt) >= (obj.penaltyCooldownFrames || 0);
       if (cooldownOk) {
-        // add penalty
+        // Add penalty
         if (typeof globalState.penaltyPoints !== 'number') globalState.penaltyPoints = 0;
         globalState.penaltyPoints += (obj.penaltyAmount || 0);
         obj.penaltyLastAppliedAt = frame;
-        // optional: brief visual feedback could be set here (e.g., flash color)
+        
+        // RETURN STATUS TO STOP GAME
+        return "bomb_hit";
       }
     }
   }
+
+  return "continue";  // No bomb hit
 }

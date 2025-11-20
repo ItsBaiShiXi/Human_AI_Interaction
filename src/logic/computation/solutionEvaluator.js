@@ -169,6 +169,8 @@ export function enumerateAllSolutions() {
             penaltyHits: phase1.penaltyHits,
             interceptPosX: copyPlayer.x, // pos after phase-1
             interceptPosY: copyPlayer.y,
+            targetObjectId: id,
+            isFinalForTarget: false,
           });
 
           // advance absolute time to the turn moment
@@ -185,7 +187,7 @@ export function enumerateAllSolutions() {
             turnedNow.vx, turnedNow.vy
           );
 
-          const m2 = processMove(s2, t2, copyPlayer, ix2, iy2, copyObjects, simFrame);
+          const m2 = processMove(s2, t2, copyPlayer, ix2, iy2, copyObjects, simFrame, id, true);
           moves.push(m2);
           penaltySum += (m2.penaltyPoints || 0);
           penaltyHitSum += (m2.penaltyHits || 0);
@@ -203,7 +205,7 @@ export function enumerateAllSolutions() {
 
       // 3) If not split, do the normal one-segment move
       if (isInProgress && !didSplit) {
-        const m = processMove(success, timeToIntercept, copyPlayer, ix, iy, copyObjects, simFrame);
+        const m = processMove(success, timeToIntercept, copyPlayer, ix, iy, copyObjects, simFrame, id, true);
         moves.push(m);
         penaltySum += (m.penaltyPoints || 0);
         penaltyHitSum += (m.penaltyHits || 0);
@@ -260,7 +262,9 @@ function processMove(
   interceptPosX,
   interceptPosY,
   objects,
-  simFrameStart
+  simFrameStart,
+  targetObjectId,
+  isFinalForTarget
 ) {
   const move = { success };
   const T = Math.max(0, Math.round(timeToIntercept));
@@ -280,6 +284,9 @@ function processMove(
 
   move.interceptPosX = player.x;
   move.interceptPosY = player.y;
+
+  move.targetObjectId = targetObjectId;
+  move.isFinalForTarget = isFinalForTarget;
 
   return move;
 }
@@ -377,16 +384,12 @@ function logSolutions(solutions) {
 
 // Rotate velocity for green-turner
 function applyTurnStrategy(dX, dY, strategy, angle) {
-  switch (strategy) {
-    case 'reverse': return { dX: -dX, dY: -dY };
-    case 'rotate90': return { dX: -dY, dY: dX };
-    case 'random': {
-      const speed = Math.hypot(dX, dY);
-      const a = angle ?? 0
-      return { dX: speed * Math.cos(a), dY: speed * Math.sin(a) };
-    }
-    default: return { dX, dY };
+  // Only 'reverse' (180°) turns are used in the experiment
+  if (strategy === 'reverse') {
+    return { dX: -dX, dY: -dY };
   }
+  // Default: no turn (shouldn't happen, but safe fallback)
+  return { dX, dY };
 }
 
 function circlesOverlap(x1, y1, r1, x2, y2, r2) {

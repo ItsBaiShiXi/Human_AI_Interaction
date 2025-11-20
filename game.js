@@ -202,30 +202,36 @@ function updateObjectPositions(frame) {
 }
 
 function updatePlayerPosition() {
-  let currentMove = playerSolution.moves[interceptionCounter]; // object that contains all information for intercepting the current object
-  let currentObject = playerSolution.sequence[interceptionCounter];
+  const moves = playerSolution?.moves || [];
+  if (moveCounter >= moves.length) return "finished";
+
+  const currentMove = moves[moveCounter];
   interceptionFrame += 1;
 
-  let status = "in progress";
-  if (interceptionFrame == currentMove.timeToIntercept) {
-    console.log(`Intercepted object: ${currentObject}`);
-    objects[currentObject].isIntercepted = true;
-    interceptionFrame = 0; // reset counter for the next object
-    interceptionCounter += 1;
-
-    if (interceptionCounter < playerSolution.moves.length) {
-      currentMove = playerSolution.moves[interceptionCounter];
-    } else {
-      console.log("Finished with interception sequence");
-      status = "finished";
-      return status;
-    }
-  }
-
+  // step the player one frame along this move
   player.x += currentMove.dX;
   player.y += currentMove.dY;
 
-  return status;
+  // finished this move segment?
+  if (interceptionFrame >= currentMove.timeToIntercept) {
+    // Only mark the object if this was the final segment for that target
+    if (currentMove.isFinalForTarget) {
+      const objIdx = currentMove.targetObjectId;
+      if (Number.isInteger(objIdx) && objects[objIdx]) {
+        objects[objIdx].isIntercepted = currentMove.success;
+      }
+    }
+
+    // advance to next move
+    moveCounter += 1;
+    interceptionFrame = 0;
+
+    if (moveCounter >= moves.length) {
+      return "finished";
+    }
+  }
+
+  return "in progress";
 }
 
 function startDemo() {
@@ -284,8 +290,8 @@ function startInterceptionSequence() {
   //aiRequest.disabled = true; // Disables the button
 
   playerSolution = lookupInterceptionPaths();
-  interceptionCounter = 0; // the index of the interception path
-  interceptionFrame = 0;
+  moveCounter = 0;       // start at the first move
+  interceptionFrame = 0; // frame within current move
 
   infoContent.innerHTML = "<p>Interception sequence in progress...</p>";
   canshowRequestAI = false;
@@ -450,9 +456,7 @@ function handleObjectSelection(event) {
 function drawArrows() {
   objects.forEach((object) => {
     if (!object.isIntercepted) {
-      const arrowLength =
-        Math.sqrt(object.dX ** 2 + object.dY ** 2) * ARROW_FACTOR; // Scale speed for arrow length
-
+      const arrowLength = Math.hypot(object.dX, object.dY) * ARROW_FACTOR; // Scale speed for arrow length
       const angle = Math.atan2(object.dY, object.dX);
 
       const startX = object.x;
@@ -491,8 +495,7 @@ function drawArrows() {
 
 function drawPlayerArrow() {
   // Draw the player arrow
-  const arrowLength = Math.sqrt(player.dX ** 2 + player.dY ** 2) * ARROW_FACTOR; // Scale speed for arrow length
-
+  const arrowLength = Math.hypot(player.dX, player.dY) * ARROW_FACTOR;
   const angle = Math.atan2(player.dY, player.dX);
 
   const startX = player.x;
@@ -639,7 +642,7 @@ function drawPlayer() {
   // Visualize interception position (for debugging)
   if (!true) {
     if (playerSolution) {
-      let currentMove = playerSolution.moves[interceptionCounter]; // object that contains all information for intercepting the current object
+      const currentMove = playerSolution.moves[moveCounter];
       ctx.beginPath();
       ctx.arc(
         currentMove.interceptPosX,
@@ -849,7 +852,21 @@ function enumerateAllSolutions() {
         objectNow.dY
       );
 
-      let move = { success: success, withinCircle: withinCircle, value: 0 };
+      const move = { 
+        success: success, 
+        withinCircle: withinCircle, 
+        value: 0,
+        timeToIntercept,
+        dX: (interceptPosX - copyPlayer.x) / timeToIntercept,
+        dY: (interceptPosY - copyPlayer.y) / timeToIntercept,
+        interceptPosX: copyPlayer.x + timeToIntercept * ((interceptPosX - copyPlayer.x) / timeToIntercept),
+        interceptPosY: copyPlayer.y + timeToIntercept * ((interceptPosY - copyPlayer.y) / timeToIntercept),
+
+        // NEW — the important bits:
+        targetObjectId: id,         // which object this move is chasing
+        isFinalForTarget: true,  
+      };
+
       if (success) {
         // interception is possible (within or outside the circle)
         if (withinCircle) {
