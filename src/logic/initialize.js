@@ -14,8 +14,10 @@ import { BALL_TYPES } from "../data/constant.js";
 function pickBallType(rngFn) {
   const random = (typeof rngFn === "function") ? rngFn : Math.random;
   const p = random();
-  //if (p < 0.15) return 'blue';
-  if (p < 1.0) return 'green_turner';
+  // The chances changed here are for testing purposes, ignore here when debugging
+  // NOT A BUG!
+  // if (p < 0.15) return 'blue';
+  if (p < 0.3) return 'green_turner';
   // if (p < 0.40) return 'gray_hazard';
   return 'normal';
 }
@@ -61,6 +63,32 @@ export function initializeObjects(isComprehensionCheck, needRetry) {
       let newObject = generateRandomObject(isComprehensionCheck);
       globalState.objects.push(newObject);
     }
+    // ========== NEW: Add bomb as 11th ball (50% chance) ==========
+    const shouldHaveBomb = globalState.randomGenerator() < 1;  // 50% chance
+
+    if (shouldHaveBomb) {
+      let bombObject = generateRandomObject(isComprehensionCheck);
+
+      // Convert to bomb with special properties
+      bombObject.type = 'gray_hazard';
+      bombObject.isHazard = true;
+      bombObject.isBomb = true;  // NEW: Flag to identify the bomb
+      bombObject.canBeSelected = false;  // NEW: Cannot be selected
+      bombObject.penaltyAmount = 1.0;  // Instant game over (high penalty)
+      bombObject.penaltyCooldownFrames = 0;  // No cooldown needed
+      bombObject.penaltyLastAppliedAt = -Infinity;
+
+      // Make it larger and visually distinct
+      bombObject.radius = 25;  // Larger than normal (15)
+      bombObject.colorFill = '#FF0000';  // Bright red center
+      bombObject.colorStroke = '#000000';  // Black outline
+
+      // Assign special index to distinguish from selectable balls
+      bombObject.index = numObjects;  // Index 10 (if NUM_OBJECTS = 10)
+
+      globalState.objects.push(bombObject);
+    }
+    // ============================================================
   }
 }
 
@@ -175,10 +203,10 @@ function generateRandomObject(isEasyMode) {
     const posAtTurn_x = x0 + dx * turnAfterFrames;
     const posAtTurn_y = y0 + dy * turnAfterFrames;
     const distAtTurn = Math.sqrt(
-      (posAtTurn_x - globalState.centerX) ** 2 + 
+      (posAtTurn_x - globalState.centerX) ** 2 +
       (posAtTurn_y - globalState.centerY) ** 2
     );
-    
+
     // If ball will be outside or very close to edge at turn time, disable turn
     if (distAtTurn >= GAME_RADIUS - 20) {
       turnAfterFrames = null;
@@ -208,7 +236,7 @@ function generateRandomObject(isEasyMode) {
     initY0: y0,
     initDX: dx,
     initDY: dy,
-    
+
     // NEW: type and behavior scaffolding
     type,
     birthFrame: 0,              // used by behaviors

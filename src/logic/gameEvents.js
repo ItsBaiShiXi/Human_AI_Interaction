@@ -240,8 +240,21 @@ function showReplayButton() {
 }
 
 function loadBestSolutions(callback) {
-  import("./computation/solutionEvaluator.js")
-    .then((module) => module.enumerateAllSolutions())
+  // ========== ADD THIS: Generate permutations for selectable balls only ==========
+  // Filter to get only selectable ball indices (excludes bomb)
+  const selectableIndices = globalState.objects
+    .filter(obj => !obj.isBomb && obj.canBeSelected !== false)
+    .map(obj => obj.index);
+  
+  globalState.permutations = import("./computation/solutionEvaluator.js")
+    .then((module) => {
+      globalState.permutations = module.generatePermutations(
+        selectableIndices, 
+        globalState.NUM_SELECTIONS
+      );
+      return module.enumerateAllSolutions();
+    })
+    // ===============================================================================
     .then(([allSolutions, bestSolution, subOptimalSolution]) => {
       globalState.allSolutions = allSolutions;
       globalState.bestSolution = bestSolution;

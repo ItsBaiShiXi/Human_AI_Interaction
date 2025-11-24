@@ -113,7 +113,7 @@ export function enumerateAllSolutions() {
     const copyObjects = snapshotForSolver(globalState.objects, globalState.totalFrames);
     const copyPlayer = structuredClone(globalState.player);
 
-    let simFrame = 0;                 // absolute time for this sequence
+    let simFrame = 0;
     let totalValue = 0;
     let penaltySum = 0;
     let penaltyHitSum = 0;
@@ -121,6 +121,7 @@ export function enumerateAllSolutions() {
     let objDetails = [];
     let isInProgress = true;
     let interceptedCnt = 0;
+    let bombHitDuringSequence = false;  // NEW: Track if bomb was hit
 
     for (let j = 0; j < globalState.NUM_SELECTIONS; j++) {
       const id = sequence[j];
@@ -137,7 +138,7 @@ export function enumerateAllSolutions() {
 
       if (success) interceptedCnt++;
 
-      // 2) If the object will TURN before this intercept completes, split the chase
+      // 2) Handle green turner splits (same as before)
       let didSplit = false;
       if (isInProgress &&
         objectNow.type === 'green_turner' &&
@@ -145,21 +146,16 @@ export function enumerateAllSolutions() {
 
         const framesUntilTurn = objectNow.turnAfterFrames - simFrame;
         if (framesUntilTurn > 0 && Math.round(timeToIntercept) > framesUntilTurn) {
-          // ---- Phase 1: move until turn moment (toward the initial intercept)
-          // ---- Phase 1: move until turn moment using original intercept velocity ----
-          const Ttot = Math.max(1, Math.round(timeToIntercept));      // original total time
-          const Tseg = Math.max(0, Math.round(framesUntilTurn));      // we only step this many
+          const Ttot = Math.max(1, Math.round(timeToIntercept));
+          const Tseg = Math.max(0, Math.round(framesUntilTurn));
 
-          // per-frame velocity that would arrive at (ix, iy) in timeToIntercept frames
           const vx1 = (ix - copyPlayer.x) / Ttot;
           const vy1 = (iy - copyPlayer.y) / Ttot;
 
-          // advance player & accumulate hazard penalties for Tseg frames
           const phase1 = stepPhaseConstant(
             copyPlayer, copyObjects, vx1, vy1, Tseg, simFrame
           );
 
-          // record a synthetic move segment for UI/debug
           moves.push({
             success: false,
             timeToIntercept: Tseg,
@@ -167,18 +163,38 @@ export function enumerateAllSolutions() {
             dY: vy1,
             penaltyPoints: phase1.penaltyPoints,
             penaltyHits: phase1.penaltyHits,
-            interceptPosX: copyPlayer.x, // pos after phase-1
+            interceptPosX: copyPlayer.x,
             interceptPosY: copyPlayer.y,
             targetObjectId: id,
             isFinalForTarget: false,
+            bombHit: phase1.bombHit || false,  // NEW
           });
 
-          // advance absolute time to the turn moment
+          // ========== NEW: Check for bomb hit in phase 1 ==========
+          if (phase1.bombHit) {
+            bombHitDuringSequence = true;
+            simFrame += phase1.stoppedAtFrame + 1;
+            penaltySum += (phase1.penaltyPoints || 0);
+            penaltyHitSum += (phase1.penaltyHits || 0);
+            isInProgress = false;
+            
+            // Add zero-value for current target
+            objDetails.push({
+              objIndex: id,
+              finalDistance: Infinity,
+              isIntercepted: false,
+              finalValue: 0,
+              totalValue: objectNow.value,
+            });
+            
+            break;  // Stop sequence
+          }
+          // ======================================================
+
           simFrame += Tseg;
           penaltySum += (phase1.penaltyPoints || 0);
           penaltyHitSum += (phase1.penaltyHits || 0);
 
-          // ---- Phase 2: recompute from turned state at new simFrame
           const turnedNow = getObjectStateAtFrame(objectNow, simFrame);
           const [s2, t2, ix2, iy2, fd2] = attemptIntercept(
             true,
@@ -189,11 +205,31 @@ export function enumerateAllSolutions() {
 
           const m2 = processMove(s2, t2, copyPlayer, ix2, iy2, copyObjects, simFrame, id, true);
           moves.push(m2);
+          
+          // ========== NEW: Check for bomb hit in phase 2 ==========
+          if (m2.bombHit) {
+            bombHitDuringSequence = true;
+            simFrame += m2.timeToIntercept;
+            penaltySum += (m2.penaltyPoints || 0);
+            penaltyHitSum += (m2.penaltyHits || 0);
+            isInProgress = false;
+            
+            objDetails.push({
+              objIndex: id,
+              finalDistance: fd2,
+              isIntercepted: s2,
+              finalValue: 0,  // No value awarded if bomb hit
+              totalValue: objectNow.value,
+            });
+            
+            break;  // Stop sequence
+          }
+          // ======================================================
+          
           penaltySum += (m2.penaltyPoints || 0);
           penaltyHitSum += (m2.penaltyHits || 0);
           simFrame += Math.max(0, Math.round(t2));
 
-          // use phase-2 results for scoring/bookkeeping
           success = s2;
           timeToIntercept = t2;
           ix = ix2; iy = iy2;
@@ -203,31 +239,70 @@ export function enumerateAllSolutions() {
         }
       }
 
-      // 3) If not split, do the normal one-segment move
+      // 3) Normal one-segment move
       if (isInProgress && !didSplit) {
         const m = processMove(success, timeToIntercept, copyPlayer, ix, iy, copyObjects, simFrame, id, true);
         moves.push(m);
+        
+        // ========== NEW: Check for bomb hit ==========
+        if (m.bombHit) {
+          bombHitDuringSequence = true;
+          simFrame += m.timeToIntercept;  // Use actual time moved
+          penaltySum += (m.penaltyPoints || 0);
+          penaltyHitSum += (m.penaltyHits || 0);
+          isInProgress = false;
+          
+          // Add entry for current target (no value awarded)
+          objDetails.push({
+            objIndex: id,
+            finalDistance: finalDist,
+            isIntercepted: success,
+            finalValue: 0,  // No value awarded if bomb hit
+            totalValue: objectNow.value,
+          });
+          
+          break;  // Stop sequence immediately
+        }
+        // ===========================================
+        
         penaltySum += (m.penaltyPoints || 0);
         penaltyHitSum += (m.penaltyHits || 0);
         simFrame += Math.max(0, Math.round(timeToIntercept));
       }
 
-      // 4) Score this object
-      const valNow = computeObjectValue(objectNow, success, finalDist, j, interceptedCnt);
-      totalValue += valNow;
+      // 4) Score this object (only if no bomb hit)
+      if (!bombHitDuringSequence) {
+        const valNow = computeObjectValue(objectNow, success, finalDist, j, interceptedCnt);
+        totalValue += valNow;
 
-      if (!success && isInProgress) isInProgress = false;
+        if (!success && isInProgress) isInProgress = false;
 
-      objDetails.push({
-        objIndex: id,
-        finalDistance: finalDist,
-        isIntercepted: success,
-        finalValue: valNow,
-        totalValue: objectNow.value,
-      });
+        objDetails.push({
+          objIndex: id,
+          finalDistance: finalDist,
+          isIntercepted: success,
+          finalValue: valNow,
+          totalValue: objectNow.value,
+        });
+      }
     }
 
-    // 5) Apply per-sequence penalty
+    // ========== NEW: Add zero entries for remaining targets if bomb hit ==========
+    if (bombHitDuringSequence) {
+      for (let k = objDetails.length; k < globalState.NUM_SELECTIONS; k++) {
+        const id = sequence[k];
+        objDetails.push({
+          objIndex: id,
+          finalDistance: Infinity,
+          isIntercepted: false,
+          finalValue: 0,
+          totalValue: copyObjects[id].value,
+        });
+      }
+    }
+    // ============================================================================
+
+    // 5) Apply penalty (bomb gives massive penalty, making this solution terrible)
     totalValue -= penaltySum;
 
     allSolutions.push({
@@ -240,6 +315,7 @@ export function enumerateAllSolutions() {
       objDetails,
       penaltyPoints: penaltySum,
       penaltyHits: penaltyHitSum,
+      bombHit: bombHitDuringSequence,  // NEW: Track if this solution hits bomb
     });
   }
 
@@ -249,7 +325,7 @@ export function enumerateAllSolutions() {
     logSolutions(allSolutions);
   }
 
-  return [allSolutions, allSolutions[0], allSolutions[1]]; // all, best, sub optimal
+  return [allSolutions, allSolutions[0], allSolutions[1]];
 }
 
 /**
@@ -275,16 +351,23 @@ function processMove(
   move.dX = dX;
   move.dY = dY;
 
-  // stateless stepping (does not mutate objects)
-  const { penaltyPoints, penaltyHits } = stepPhaseConstant(
+  // ========== Use your updated stepPhaseConstant ==========
+  const result = stepPhaseConstant(
     player, objects, dX, dY, T, simFrameStart
   );
-  move.penaltyPoints = penaltyPoints;
-  move.penaltyHits = penaltyHits;
+  
+  move.penaltyPoints = result.penaltyPoints;
+  move.penaltyHits = result.penaltyHits;
+  move.bombHit = result.bombHit || false;  // NEW
+  
+  // If bomb hit, update actual time moved
+  if (result.bombHit) {
+    move.timeToIntercept = result.stoppedAtFrame + 1;
+  }
+  // ======================================================
 
   move.interceptPosX = player.x;
   move.interceptPosY = player.y;
-
   move.targetObjectId = targetObjectId;
   move.isFinalForTarget = isFinalForTarget;
 
@@ -411,19 +494,20 @@ function stepPhaseConstant(player, objects, dX, dY, frames, simFrameStart) {
   const lastHitAt = new Map();
 
   for (let t = 0; t < frames; t++) {
-    // advance player one frame
     player.x += dX;
     player.y += dY;
 
-    const F = simFrameStart + t + 1; // absolute frame after this step
+    const F = simFrameStart + t + 1;
 
-    // hazard overlap checks using stateless positions
     for (const obj of objects) {
       if (!obj.isHazard || obj.isIntercepted) continue;
 
       const { x, y } = getObjectStateAtFrame(obj, F);
+      
+      // ========== Use obj.radius (25 for bomb, 15 for normal) ==========
       const hit = ((player.x - x) ** 2 + (player.y - y) ** 2) <=
-        ((player.radius || 15) + (obj.radius || 15)) ** 2;
+        ((player.radius || 15) + (obj.radius)) ** 2;  // Use obj.radius, not hardcoded 15
+      // =================================================================
 
       if (hit) {
         const cooldown = obj.penaltyCooldownFrames || 0;
@@ -432,12 +516,26 @@ function stepPhaseConstant(player, objects, dX, dY, frames, simFrameStart) {
           penaltyPoints += (obj.penaltyAmount || 0);
           penaltyHits += 1;
           lastHitAt.set(obj, t);
+          
+          // ========== Stop immediately on bomb hit ==========
+          return { 
+            penaltyPoints, 
+            penaltyHits, 
+            stoppedAtFrame: t,
+            bombHit: true
+          };
+          // =================================================
         }
       }
     }
   }
 
-  return { penaltyPoints, penaltyHits };
+  return { 
+    penaltyPoints, 
+    penaltyHits, 
+    stoppedAtFrame: frames,
+    bombHit: false
+  };
 }
 
 

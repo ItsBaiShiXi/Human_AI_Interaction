@@ -29,6 +29,13 @@ export function handleObjectSelection(event) {
 
   for (let object of globalState.objects) {
     const distance = Math.hypot(mouseX - object.x, mouseY - object.y);
+
+    // ========== NEW: Skip bomb (cannot be selected) ==========
+    if (object.isBomb || object.canBeSelected === false) {
+      continue;
+    }
+    // ========================================================
+
     if (
       distance <= object.radius &&
       !object.isSelected &&
