@@ -79,7 +79,7 @@ export function initializeObjects(isComprehensionCheck, needRetry) {
       bombObject.penaltyLastAppliedAt = -Infinity;
 
       // Make it larger and visually distinct
-      bombObject.radius = 25;  // Larger than normal (15)
+      bombObject.radius = 50;  // Larger than normal (15)
       bombObject.colorFill = '#FF0000';  // Bright red center
       bombObject.colorStroke = '#000000';  // Black outline
 

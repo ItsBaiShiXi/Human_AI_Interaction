@@ -172,10 +172,12 @@ export function enumerateAllSolutions() {
 
           // ========== NEW: Check for bomb hit in phase 1 ==========
           if (phase1.bombHit) {
+            const valNow = computeObjectValue(objectNow, false, Infinity, j, interceptedCnt);
+            totalValue += valNow;
             bombHitDuringSequence = true;
             simFrame += phase1.stoppedAtFrame + 1;
-            penaltySum += (phase1.penaltyPoints || 0);
-            penaltyHitSum += (phase1.penaltyHits || 0);
+            penaltySum += (phase1.penaltyPoints || 0);  //useless
+            penaltyHitSum += (phase1.penaltyHits || 0); //useless 
             isInProgress = false;
             
             // Add zero-value for current target
@@ -183,11 +185,11 @@ export function enumerateAllSolutions() {
               objIndex: id,
               finalDistance: Infinity,
               isIntercepted: false,
-              finalValue: 0,
+              finalValue: valNow,
               totalValue: objectNow.value,
             });
             
-            break;  // Stop sequence
+            // break;  // Stop sequence
           }
           // ======================================================
 
@@ -208,6 +210,8 @@ export function enumerateAllSolutions() {
           
           // ========== NEW: Check for bomb hit in phase 2 ==========
           if (m2.bombHit) {
+            const valNow = computeObjectValue(objectNow, s2, fd2, j, interceptedCnt);
+            totalValue += valNow;
             bombHitDuringSequence = true;
             simFrame += m2.timeToIntercept;
             penaltySum += (m2.penaltyPoints || 0);
@@ -218,7 +222,7 @@ export function enumerateAllSolutions() {
               objIndex: id,
               finalDistance: fd2,
               isIntercepted: s2,
-              finalValue: 0,  // No value awarded if bomb hit
+              finalValue: valNow,  // No value awarded if bomb hit
               totalValue: objectNow.value,
             });
             
@@ -246,6 +250,8 @@ export function enumerateAllSolutions() {
         
         // ========== NEW: Check for bomb hit ==========
         if (m.bombHit) {
+          const valNow = computeObjectValue(objectNow, success, finalDist, j, interceptedCnt);
+          totalValue += valNow;
           bombHitDuringSequence = true;
           simFrame += m.timeToIntercept;  // Use actual time moved
           penaltySum += (m.penaltyPoints || 0);
@@ -257,11 +263,11 @@ export function enumerateAllSolutions() {
             objIndex: id,
             finalDistance: finalDist,
             isIntercepted: success,
-            finalValue: 0,  // No value awarded if bomb hit
+            finalValue: valNow,
             totalValue: objectNow.value,
           });
           
-          break;  // Stop sequence immediately
+          continue;  // Stop sequence immediately
         }
         // ===========================================
         
@@ -271,39 +277,27 @@ export function enumerateAllSolutions() {
       }
 
       // 4) Score this object (only if no bomb hit)
-      if (!bombHitDuringSequence) {
-        const valNow = computeObjectValue(objectNow, success, finalDist, j, interceptedCnt);
-        totalValue += valNow;
 
-        if (!success && isInProgress) isInProgress = false;
+      const valNow = computeObjectValue(objectNow, success, finalDist, j, interceptedCnt);
+      totalValue += valNow;
 
-        objDetails.push({
-          objIndex: id,
-          finalDistance: finalDist,
-          isIntercepted: success,
-          finalValue: valNow,
-          totalValue: objectNow.value,
-        });
-      }
+      if (!success && isInProgress) isInProgress = false;
+
+      objDetails.push({
+        objIndex: id,
+        finalDistance: finalDist,
+        isIntercepted: success,
+        finalValue: valNow,
+        totalValue: objectNow.value,
+      });
+      
     }
 
-    // ========== NEW: Add zero entries for remaining targets if bomb hit ==========
-    if (bombHitDuringSequence) {
-      for (let k = objDetails.length; k < globalState.NUM_SELECTIONS; k++) {
-        const id = sequence[k];
-        objDetails.push({
-          objIndex: id,
-          finalDistance: Infinity,
-          isIntercepted: false,
-          finalValue: 0,
-          totalValue: copyObjects[id].value,
-        });
-      }
-    }
     // ============================================================================
 
     // 5) Apply penalty (bomb gives massive penalty, making this solution terrible)
-    totalValue -= penaltySum;
+    // NO LONGER NEEDED AS PENALTY HANDLED DURING SIMULATION
+    // totalValue -= penaltySum;
 
     allSolutions.push({
       sequence,
