@@ -2,8 +2,8 @@ import { GAME_RADIUS } from "../data/constant.js";
 import { globalState } from "../data/variable.js";
 import { redrawAll } from "./drawing.js";
 import { endDemo } from "./gameEvents.js";
-
 import { finishInterception } from "./gameEvents.js";
+import { getBlueBallValue } from "../utils/blueballDecay.js";
 
 export function animateObjects() {
   // Update positions and redraw
@@ -24,9 +24,9 @@ export function animateObjects() {
 export function animateInterception() {
   updateObjectPositions(globalState.totalFrames);
   let status = updatePlayerPosition();
-  
+
   // Apply penalties for hazard collisions (gray balls) during interception
-  applyHazardPenalties(globalState.totalFrames);
+  let hazardStatus = applyHazardPenalties(globalState.totalFrames);
 
   redrawAll();
   globalState.totalFrames++;
@@ -37,7 +37,8 @@ export function animateInterception() {
         (globalState.player.y - globalState.centerY) ** 2
     ) <= GAME_RADIUS;
 
-  if (isInCircle && status == "in progress") {
+  // Stop animation if bomb hit or player exits circle or sequence finished
+  if (isInCircle && status == "in progress" && hazardStatus !== "bomb_hit") {
     globalState.animationFrameId = requestAnimationFrame(animateInterception);
   } else {
     finishInterception();
@@ -73,6 +74,14 @@ function updateObjectPositions(frame) {
       x = obj.initX0 + frame * obj.initDX;
       y = obj.initY0 + frame * obj.initDY;
     }
+
+    // Update blue ball value based on time decay
+    obj.value = getBlueBallValue(
+      obj,
+      frame,
+      globalState.OBSERVATION_FRAMES,
+      globalState.INTERCEPTION_FRAMES
+    );
 
     // Commit only the *derived* values for this frame
     obj.x = x;

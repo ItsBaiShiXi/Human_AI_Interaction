@@ -1,6 +1,7 @@
 import { globalState } from "../../data/variable";
 import { GAME_RADIUS } from "../../data/constant";
 import { attemptIntercept } from "./interceptionSimulator";
+import { getBlueBallValue } from "../../utils/blueballDecay.js";
 
 /*
 --------------------------------------------------------------------------------------
@@ -167,79 +168,58 @@ export function enumerateAllSolutions() {
             interceptPosY: copyPlayer.y,
             targetObjectId: id,
             isFinalForTarget: false,
-            bombHit: phase1.bombHit || false,  // NEW
+            bombHit: phase1.bombHit || false,
           });
 
-          // ========== NEW: Check for bomb hit in phase 1 ==========
+          // ========== Check for bomb hit in phase 1 ==========
           if (phase1.bombHit) {
-            const valNow = computeObjectValue(objectNow, false, Infinity, j, interceptedCnt);
-            totalValue += valNow;
             bombHitDuringSequence = true;
-            simFrame += phase1.stoppedAtFrame + 1;
-            penaltySum += (phase1.penaltyPoints || 0);  //useless
-            penaltyHitSum += (phase1.penaltyHits || 0); //useless 
+            simFrame += phase1.stoppedAtFrame + 1;  // Freeze at bomb hit frame
             isInProgress = false;
-            
-            // Add zero-value for current target
-            objDetails.push({
-              objIndex: id,
-              finalDistance: Infinity,
-              isIntercepted: false,
-              finalValue: valNow,
-              totalValue: objectNow.value,
-            });
-            
-            // break;  // Stop sequence
+            success = false;
+            finalDist = Infinity;
+            didSplit = true;
+            // Note: Scoring happens below at line ~269 for consistency
+            // Skip phase 2 since bomb already hit
+          } else {
+            // Normal case: update penalties and simFrame, then process phase 2
+            simFrame += Tseg;
+            penaltySum += (phase1.penaltyPoints || 0);
+            penaltyHitSum += (phase1.penaltyHits || 0);
+
+            const turnedNow = getObjectStateAtFrame(objectNow, simFrame);
+            const [s2, t2, ix2, iy2, fd2] = attemptIntercept(
+              true,
+              copyPlayer.x, copyPlayer.y, copyPlayer.speed,
+              turnedNow.x, turnedNow.y,
+              turnedNow.vx, turnedNow.vy
+            );
+
+            const m2 = processMove(s2, t2, copyPlayer, ix2, iy2, copyObjects, simFrame, id, true);
+            moves.push(m2);
+
+            // ========== Check for bomb hit in phase 2 ==========
+            if (m2.bombHit) {
+              bombHitDuringSequence = true;
+              simFrame += m2.timeToIntercept;  // Freeze at bomb hit frame
+              isInProgress = false;
+              // Note: Scoring happens below at line ~269 for consistency
+            } else {
+              // Normal case: update penalties and simFrame
+              penaltySum += (m2.penaltyPoints || 0);
+              penaltyHitSum += (m2.penaltyHits || 0);
+              simFrame += Math.max(0, Math.round(t2));
+            }
+            // ====================================================
+
+            success = s2;
+            timeToIntercept = t2;
+            ix = ix2; iy = iy2;
+            finalDist = fd2;
+
+            didSplit = true;
           }
-          // ======================================================
-
-          simFrame += Tseg;
-          penaltySum += (phase1.penaltyPoints || 0);
-          penaltyHitSum += (phase1.penaltyHits || 0);
-
-          const turnedNow = getObjectStateAtFrame(objectNow, simFrame);
-          const [s2, t2, ix2, iy2, fd2] = attemptIntercept(
-            true,
-            copyPlayer.x, copyPlayer.y, copyPlayer.speed,
-            turnedNow.x, turnedNow.y,
-            turnedNow.vx, turnedNow.vy
-          );
-
-          const m2 = processMove(s2, t2, copyPlayer, ix2, iy2, copyObjects, simFrame, id, true);
-          moves.push(m2);
-          
-          // ========== NEW: Check for bomb hit in phase 2 ==========
-          if (m2.bombHit) {
-            const valNow = computeObjectValue(objectNow, s2, fd2, j, interceptedCnt);
-            totalValue += valNow;
-            bombHitDuringSequence = true;
-            simFrame += m2.timeToIntercept;
-            penaltySum += (m2.penaltyPoints || 0);
-            penaltyHitSum += (m2.penaltyHits || 0);
-            isInProgress = false;
-            
-            objDetails.push({
-              objIndex: id,
-              finalDistance: fd2,
-              isIntercepted: s2,
-              finalValue: valNow,  // No value awarded if bomb hit
-              totalValue: objectNow.value,
-            });
-            
-            break;  // Stop sequence
-          }
-          // ======================================================
-          
-          penaltySum += (m2.penaltyPoints || 0);
-          penaltyHitSum += (m2.penaltyHits || 0);
-          simFrame += Math.max(0, Math.round(t2));
-
-          success = s2;
-          timeToIntercept = t2;
-          ix = ix2; iy = iy2;
-          finalDist = fd2;
-
-          didSplit = true;
+          // ====================================================
         }
       }
 
@@ -247,38 +227,25 @@ export function enumerateAllSolutions() {
       if (isInProgress && !didSplit) {
         const m = processMove(success, timeToIntercept, copyPlayer, ix, iy, copyObjects, simFrame, id, true);
         moves.push(m);
-        
-        // ========== NEW: Check for bomb hit ==========
+
+        // ========== Check for bomb hit ==========
         if (m.bombHit) {
-          const valNow = computeObjectValue(objectNow, success, finalDist, j, interceptedCnt);
-          totalValue += valNow;
           bombHitDuringSequence = true;
-          simFrame += m.timeToIntercept;  // Use actual time moved
+          simFrame += m.timeToIntercept;  // Freeze at bomb hit frame
+          isInProgress = false;
+          // Note: Scoring happens below at line ~282 for consistency
+        } else {
+          // Normal case: update penalties and simFrame
           penaltySum += (m.penaltyPoints || 0);
           penaltyHitSum += (m.penaltyHits || 0);
-          isInProgress = false;
-          
-          // Add entry for current target (no value awarded)
-          objDetails.push({
-            objIndex: id,
-            finalDistance: finalDist,
-            isIntercepted: success,
-            finalValue: valNow,
-            totalValue: objectNow.value,
-          });
-          
-          continue;  // Stop sequence immediately
+          simFrame += Math.max(0, Math.round(timeToIntercept));
         }
-        // ===========================================
-        
-        penaltySum += (m.penaltyPoints || 0);
-        penaltyHitSum += (m.penaltyHits || 0);
-        simFrame += Math.max(0, Math.round(timeToIntercept));
+        // =========================================
       }
 
       // 4) Score this object (only if no bomb hit)
 
-      const valNow = computeObjectValue(objectNow, success, finalDist, j, interceptedCnt);
+      const valNow = computeObjectValue(objectNow, success, finalDist, j, interceptedCnt, simFrame);
       totalValue += valNow;
 
       if (!success && isInProgress) isInProgress = false;
@@ -371,21 +338,31 @@ function processMove(
 
 /**
  * Computes the value of the object based on whether interception was successful.
+ * Accounts for blue ball decay based on the interception frame.
  */
 function computeObjectValue(
   object,
   success,
   finalDistanceAtCircle,
   selectionIndex,
-  interceptedCnt
+  interceptedCnt,
+  interceptionFrame
 ) {
-  if (success) return object.value;
+  // Get the time-adjusted value for blue balls (accounts for decay)
+  const currentValue = getBlueBallValue(
+    object,
+    globalState.OBSERVATION_FRAMES + interceptionFrame,
+    globalState.OBSERVATION_FRAMES,
+    globalState.INTERCEPTION_FRAMES
+  );
+
+  if (success) return currentValue;
 
   // Apply weight-based scoring for missed interceptions
   let weight = selectionIndex - interceptedCnt == 0 ? 0.75 : 0.25;
   let scaledValue =
     ((GAME_RADIUS * 2 - finalDistanceAtCircle) / (GAME_RADIUS * 2)) *
-    object.value *
+    currentValue *
     weight;
 
   return scaledValue;

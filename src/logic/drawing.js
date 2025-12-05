@@ -102,10 +102,22 @@ export function drawObjects() {
         ctx.fill();
       }
 
+      // Calculate color with fade effect for blue balls
+      let fillColor = object.colorFill || object.color || 'red';
+      if (object.type === 'blue' && object.initialValue !== undefined && object.initialValue > 0) {
+        // Calculate fade ratio (0 = fully faded, 1 = full blue)
+        const fadeRatio = object.value / object.initialValue;
+        // Interpolate from blue (#2b6fff) to light gray (#d0d0d0)
+        const r = Math.round(43 + (208 - 43) * (1 - fadeRatio));
+        const g = Math.round(111 + (208 - 111) * (1 - fadeRatio));
+        const b = Math.round(255 + (208 - 255) * (1 - fadeRatio));
+        fillColor = `rgb(${r}, ${g}, ${b})`;
+      }
+
       // Draw the object's filled area
       ctx.beginPath();
       ctx.arc(object.x, object.y, object.radius * object.value, 0, Math.PI * 2);
-      ctx.fillStyle = object.colorFill || object.color || 'red';
+      ctx.fillStyle = fillColor;
       ctx.fill();
 
       // Set text alignment and baseline for centering
@@ -118,12 +130,18 @@ export function drawObjects() {
         ctx.fillText(index, object.x, object.y);
       }
 
+      // Calculate stroke color with fade effect for blue balls
+      let strokeColor = object.colorStroke || object.color || 'red';
+      if (object.type === 'blue' && object.initialValue !== undefined && object.initialValue > 0) {
+        strokeColor = fillColor; // Use the same faded color for stroke
+      }
+
       // Draw the object's border
       ctx.beginPath();
       ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
       ctx.lineWidth = 3;
       //ctx.fillStyle = 'rgba(14, 13, 13, 0.3)'; // Glow effect
-      ctx.strokeStyle = object.colorStroke || object.color || 'red';
+      ctx.strokeStyle = strokeColor;
       ctx.stroke();
       //ctx.fill();
 

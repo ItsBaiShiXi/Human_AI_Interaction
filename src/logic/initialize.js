@@ -16,9 +16,9 @@ function pickBallType(rngFn) {
   const p = random();
   // The chances changed here are for testing purposes, ignore here when debugging
   // NOT A BUG!
-  // if (p < 0.15) return 'blue';
-  if (p < 0.3) return 'green_turner';
-  // if (p < 0.40) return 'gray_hazard';
+  if (p < 0.15) return 'blue';
+  if (p < 0.45) return 'green_turner';
+  // if (p < 0.55) return 'gray_hazard';
   return 'normal';
 }
 
@@ -107,7 +107,7 @@ function adjustObjectForRefreshRate(obj) {
     initDX: obj.initDX != null ? obj.initDX / globalState.speedMultiplier : dX,
     initDY: obj.initDY != null ? obj.initDY / globalState.speedMultiplier : dY,
 
-    // sensible defaults so solver/animation don’t crash
+    // sensible defaults so solver/animation don't crash
     type: obj.type ?? 'normal',                // or BALL_TYPES.NORMAL
     turnAfterFrames: obj.turnAfterFrames ?? null,
     turnStrategy: obj.turnStrategy ?? null,
@@ -120,6 +120,7 @@ function adjustObjectForRefreshRate(obj) {
 
     colorFill: obj.colorFill ?? 'red',
     colorStroke: obj.colorStroke ?? 'red',
+    initialValue: obj.initialValue ?? obj.value,  // Preserve initialValue for blue balls
   };
 }
 
@@ -176,6 +177,8 @@ function generateRandomObject(isEasyMode) {
   switch (type) {
     case 'blue':
       colorFill = colorStroke = '#2b6fff';
+      // Blue balls start with higher value (boosted by 1.5x, capped at 1.0)
+      value = Math.min(1.0, value * 1.5);
       break;
 
     case 'green_turner':
@@ -226,6 +229,7 @@ function generateRandomObject(isEasyMode) {
     dX: dx,
     dY: dy,
     value,
+    initialValue: value,  // Store initial value for blue ball decay calculation
     isSelected: false,
     selectionIndex: NaN,
     isIntercepted: false,
