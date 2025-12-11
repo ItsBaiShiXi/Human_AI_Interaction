@@ -1,0 +1,89 @@
+/* styles for instruction page8 */
+
+.page8-container {
+  display: block;
+  position: relative;
+}
+
+.page8-left-image {
+  width: 50%;
+  height: auto;
+  display: inline-block;
+}
+
+.page8-arrow-container-1 {
+  position: absolute;
+  top: 10%;
+  left: 55%;
+  z-index: 20; /* on top of the img */
+  text-align: center;
+}
+
+.page8-long-arrow-1 {
+  width: 2px;
+  height: 90px;
+  background-color: black;
+
+  position: relative;
+  margin-top: 60px;
+  margin-left: -95px;
+
+  transform: rotate(-130deg);
+  transform-origin: top;
+}
+
+.page8-arrow-container-2 {
+  position: absolute;
+  top: 40%;
+  left: 55%;
+  z-index: 30; /* on top of the img */
+  text-align: center;
+}
+
+.page8-long-arrow-2 {
+  width: 2px;
+  height: 180px;
+  background-color: black;
+
+  position: relative;
+  margin-top: -20px;
+  margin-left: -210px;
+
+  transform: rotate(-90deg);
+  transform-origin: top;
+}
+
+.page8-arrow-container-3 {
+  position: absolute;
+  top: 60%;
+  left: 55%;
+  z-index: 30; /* on top of the img */
+  text-align: center;
+}
+
+.page8-long-arrow-3 {
+  width: 2px;
+  height: 190px;
+  background-color: black;
+
+  position: relative;
+  margin-top: -55px;
+  margin-left: -210px;
+
+  transform: rotate(-80deg);
+  transform-origin: top;
+}
+
+.page8-long-arrow-1::after,
+.page8-long-arrow-2::after,
+.page8-long-arrow-3::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  /* triangle */
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 12px solid;
+}

@@ -1,0 +1,6 @@
+.DS_Store
+.cache
+.parcel-cache
+./pages/dev-bundle
+node_modules
+firebase-config.js
