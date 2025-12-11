@@ -58,16 +58,33 @@ export function initializeObjects(isComprehensionCheck, needRetry) {
       return;
     }
 
-    // Create random objects
+    // ========== NEW: Create objects with specific distribution ==========
+    // 2 normal (red), 2 blue, 2 green_turner, 4 random
+    const ballTypes = [
+      'normal', 'normal',           // 2 red balls
+      'blue', 'blue',               // 2 blue balls
+      'green_turner', 'green_turner', // 2 green balls
+      null, null, null, null        // 4 random balls (type will be picked randomly)
+    ];
+
+    // Shuffle the array to randomize positions
+    for (let i = ballTypes.length - 1; i > 0; i--) {
+      const j = Math.floor(globalState.randomGenerator() * (i + 1));
+      [ballTypes[i], ballTypes[j]] = [ballTypes[j], ballTypes[i]];
+    }
+
+    // Create objects with specified types
     for (let i = 0; i < numObjects; i++) {
-      let newObject = generateRandomObject(isComprehensionCheck);
+      let newObject = generateRandomObject(isComprehensionCheck, ballTypes[i]);
       globalState.objects.push(newObject);
     }
+    // ====================================================================
+
     // ========== NEW: Add bomb as 11th ball (50% chance) ==========
     const shouldHaveBomb = globalState.randomGenerator() < 1;  // 50% chance
 
     if (shouldHaveBomb) {
-      let bombObject = generateRandomObject(isComprehensionCheck);
+      let bombObject = generateRandomObject(isComprehensionCheck, 'normal');
 
       // Convert to bomb with special properties
       bombObject.type = 'gray_hazard';
@@ -126,8 +143,10 @@ function adjustObjectForRefreshRate(obj) {
 
 /**
  * Generates a random object positioned far from the center.
+ * @param {boolean} isEasyMode - Whether to use easy mode value scaling
+ * @param {string} type - Ball type ('normal', 'blue', 'green_turner', or null for random)
  */
-function generateRandomObject(isEasyMode) {
+function generateRandomObject(isEasyMode, type = null) {
   let x0, y0, dx, dy, speed;
   let isValid = false;
 
@@ -163,7 +182,10 @@ function generateRandomObject(isEasyMode) {
   let value = sampleBeta(alphaParam, betaParam); // Random value between 0 and 1
   if (isEasyMode) value *= 0.5; // Ensure value < 0.5 for easy mode
 
-  const type = pickBallType(globalState.randomGenerator);
+  // Use provided type or pick randomly
+  if (!type) {
+    type = pickBallType(globalState.randomGenerator);
+  }
   let colorFill = 'red';
   let colorStroke = 'red';
   let hasTurned = false;

@@ -85,6 +85,8 @@ export function getCurrentExperimentData() {
  * @property {CustomCount} total_time // seconds, 每一轮trial总时间
  * @property {boolean} is_attention_check
  * @property {boolean} is_comprehension_check
+ * @property {boolean} user_hit_bomb // whether user hit the bomb (freeze trap)
+ * @property {boolean} best_hit_bomb // whether best solution hits bomb
  */
 /**
  * Creates a new Trial object with default values
@@ -112,6 +114,8 @@ export function createNewTrialData(
     total_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
     is_comprehension_check: is_comprehension_check,
     is_attention_check: is_attention_check,
+    user_hit_bomb: false,
+    best_hit_bomb: false,
   };
 }
 
@@ -168,6 +172,10 @@ export function updateTrialData(
   trial.user_score = userSolution.totalValue;
   trial.best_score = bestSolution.totalValue;
   trial.performance = userSolution.totalValueProp * 100;
+
+  // Track bomb hit status
+  trial.user_hit_bomb = userSolution.bombHit ?? false;
+  trial.best_hit_bomb = bestSolution.bombHit ?? false;
 
   recordBestChoiceData(trial, bestSolution);
   addToCustomCount(trial.total_time, trialSec, isAfterAI); // todo fsy: total time 的trialSec会一直累加
@@ -234,13 +242,20 @@ export function addToCustomCount(countObj, value, isAfterAI) {
  * @returns {Choice}
  */
 export function createChoiceFromSolution(solution, ai_assisted_flag = "no_ai") {
-  const selected_objects = solution.objDetails.map((obj) => ({
-    object_index: obj.objIndex,
-    final_distance: obj.finalDistance ?? 0,
-    is_intercepted: obj.isIntercepted ?? false,
-    final_value: obj.finalValue ?? 0,
-    total_value: obj.totalValue ?? 0,
-  }));
+  const selected_objects = solution.objDetails.map((obj) => {
+    // Get ball type from globalState.objects using objIndex
+    const ballObj = globalState.objects[obj.objIndex];
+    const ball_type = ballObj?.type ?? 'normal';
+
+    return {
+      object_index: obj.objIndex,
+      final_distance: obj.finalDistance ?? 0,
+      is_intercepted: obj.isIntercepted ?? false,
+      final_value: obj.finalValue ?? 0,
+      total_value: obj.totalValue ?? 0,
+      ball_type: ball_type,
+    };
+  });
 
   return {
     selected_objects,
@@ -274,4 +289,5 @@ export function recordBestChoiceData(trial, bestSolution) {
  * @property {boolean} is_intercepted
  * @property {number} final_value
  * @property {number} total_value
+ * @property {string} ball_type // 'normal', 'blue', 'green_turner', 'gray_hazard'
  */
