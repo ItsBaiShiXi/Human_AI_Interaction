@@ -19,7 +19,7 @@ import {
 } from "../instructions.js";
 import { redrawAll } from "./drawing.js";
 import { animateObjects, animateInterception } from "./animation.js";
-import { initializeObjects, initializePlayer } from "./initialize.js";
+import { initializeObjects, initializeObjectsFromTrialData, initializePlayer } from "./initialize.js";
 import { handleObjectSelection, handleMouseHover } from "./mouseEvents.js";
 import { lookupInterceptionPaths } from "./computation/solutionEvaluator.js";
 import { showFeedback } from "../feedback.js";
@@ -50,7 +50,7 @@ import {
 
 --------------------------------------------------------------------------------------
 */
-export function startTrial() {
+export async function startTrial() {
   recordPreviousTrialData();
   prepareNewTrial();
 
@@ -59,7 +59,7 @@ export function startTrial() {
   initializeTrialData();
 
   prepareUIForTrial();
-  initializeGameState();
+  await initializeGameState();
   startTrialAnimation();
 }
 
@@ -163,8 +163,13 @@ function prepareUIForTrial() {
   resultInfoContent.innerHTML = ``;
 }
 
-function initializeGameState() {
-  initializeObjects(globalState.isComprehensionCheck, globalState.needRetry);
+async function initializeGameState() {
+  // Use pre-generated trials if enabled, otherwise use random generation
+  if (globalState.USE_STATIC_TRIALS) {
+    await initializeObjectsFromTrialData(globalState.isComprehensionCheck, globalState.needRetry);
+  } else {
+    initializeObjects(globalState.isComprehensionCheck, globalState.needRetry);
+  }
   initializePlayer();
   globalState.totalFrames = 0;
 }

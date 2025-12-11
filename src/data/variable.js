@@ -9,6 +9,9 @@ export const globalState = {
     57: false, // 55 + 1
   },
 
+  // NEW: Pre-generated trials mode (set via URL param ?USE_STATIC_TRIALS=true)
+  USE_STATIC_TRIALS: false, // If true, load from JSON/Firebase instead of random generation
+
   // NUM_MAIN_TRIALS: 3,
   // NUM_EDUCATION_TRIALS: 2,
   // ATTENTION_CHECK_TRIALS: {

@@ -10,6 +10,7 @@ import { sampleBeta, isAttentionCheck } from "../utils/utils.js";
 import educate1Objects from "../data/educate1_objects.json";
 import educate2Objects from "../data/educate2_objects.json";
 import { BALL_TYPES } from "../data/constant.js";
+import { loadTrial } from "../data/trialLoader.js";
 
 function pickBallType(rngFn) {
   const random = (typeof rngFn === "function") ? rngFn : Math.random;
@@ -22,6 +23,65 @@ function pickBallType(rngFn) {
   return 'normal';
 }
 
+/**
+ * Initialize objects from pre-generated trial data
+ * Use this for experimental control with static trials
+ */
+export async function initializeObjectsFromTrialData(isComprehensionCheck, needRetry) {
+  globalState.selectedObjects = []; // Reset selections
+  globalState.hoverObjectIndex = -1; // Reset hover index
+
+  if (
+    isComprehensionCheck &&
+    needRetry &&
+    globalState.lastRoundObjects.length > 0
+  ) {
+    globalState.objects = structuredClone(globalState.lastRoundObjects);
+    return;
+  }
+
+  globalState.objects = [];
+
+  // Education trials still use static JSON
+  if (isComprehensionCheck) {
+    if (globalState.curTrial == 1) {
+      globalState.objects = educate1Objects.map((obj) =>
+        adjustObjectForRefreshRate(obj)
+      );
+    } else {
+      globalState.objects = educate2Objects.map((obj) =>
+        adjustObjectForRefreshRate(obj)
+      );
+    }
+    return;
+  }
+
+  // Attention checks use educate1
+  if (isAttentionCheck()) {
+    globalState.objects = educate1Objects.map((obj) =>
+      adjustObjectForRefreshRate(obj)
+    );
+    return;
+  }
+
+  // Load pre-generated trial from JSON or Firebase
+  try {
+    const trial = await loadTrial(globalState.curTrial);
+    globalState.objects = trial.objects.map((obj) =>
+      adjustObjectForRefreshRate(obj)
+    );
+    console.log(`Loaded trial ${globalState.curTrial} with ${globalState.objects.length} objects`);
+  } catch (error) {
+    console.error(`Failed to load trial ${globalState.curTrial}, falling back to random generation:`, error);
+    // Fall back to random generation if loading fails
+    initializeObjectsRandomly();
+  }
+}
+
+/**
+ * Initialize objects with random generation (original behavior)
+ * Keep for backward compatibility and debugging
+ */
 export function initializeObjects(isComprehensionCheck, needRetry) {
   globalState.selectedObjects = []; // Reset selections
   globalState.hoverObjectIndex = -1; // Reset hover index
@@ -49,7 +109,6 @@ export function initializeObjects(isComprehensionCheck, needRetry) {
       return;
     }
 
-    const numObjects = globalState.NUM_OBJECTS;
     if (isAttentionCheck()) {
       globalState.objects = educate1Objects.map((obj) =>
         adjustObjectForRefreshRate(obj)
@@ -58,55 +117,65 @@ export function initializeObjects(isComprehensionCheck, needRetry) {
       return;
     }
 
-    // ========== NEW: Create objects with specific distribution ==========
-    // 2 normal (red), 2 blue, 2 green_turner, 4 random
-    const ballTypes = [
-      'normal', 'normal',           // 2 red balls
-      'blue', 'blue',               // 2 blue balls
-      'green_turner', 'green_turner', // 2 green balls
-      null, null, null, null        // 4 random balls (type will be picked randomly)
-    ];
-
-    // Shuffle the array to randomize positions
-    for (let i = ballTypes.length - 1; i > 0; i--) {
-      const j = Math.floor(globalState.randomGenerator() * (i + 1));
-      [ballTypes[i], ballTypes[j]] = [ballTypes[j], ballTypes[i]];
-    }
-
-    // Create objects with specified types
-    for (let i = 0; i < numObjects; i++) {
-      let newObject = generateRandomObject(isComprehensionCheck, ballTypes[i]);
-      globalState.objects.push(newObject);
-    }
-    // ====================================================================
-
-    // ========== NEW: Add bomb as 11th ball (50% chance) ==========
-    const shouldHaveBomb = globalState.randomGenerator() < 1;  // 50% chance
-
-    if (shouldHaveBomb) {
-      let bombObject = generateRandomObject(isComprehensionCheck, 'normal');
-
-      // Convert to bomb with special properties
-      bombObject.type = 'gray_hazard';
-      bombObject.isHazard = true;
-      bombObject.isBomb = true;  // NEW: Flag to identify the bomb
-      bombObject.canBeSelected = false;  // NEW: Cannot be selected
-      bombObject.penaltyAmount = 1.0;  // Instant game over (high penalty)
-      bombObject.penaltyCooldownFrames = 0;  // No cooldown needed
-      bombObject.penaltyLastAppliedAt = -Infinity;
-
-      // Make it larger and visually distinct
-      bombObject.radius = 50;  // Larger than normal (15)
-      bombObject.colorFill = '#FF0000';  // Bright red center
-      bombObject.colorStroke = '#000000';  // Black outline
-
-      // Assign special index to distinguish from selectable balls
-      bombObject.index = numObjects;  // Index 10 (if NUM_OBJECTS = 10)
-
-      globalState.objects.push(bombObject);
-    }
-    // ============================================================
+    // Random generation
+    initializeObjectsRandomly();
   }
+}
+
+/**
+ * Generate objects randomly (extracted for reuse)
+ */
+function initializeObjectsRandomly() {
+  const numObjects = globalState.NUM_OBJECTS;
+
+  // ========== NEW: Create objects with specific distribution ==========
+  // 2 normal (red), 2 blue, 2 green_turner, 4 random
+  const ballTypes = [
+    'normal', 'normal',           // 2 red balls
+    'blue', 'blue',               // 2 blue balls
+    'green_turner', 'green_turner', // 2 green balls
+    null, null, null, null        // 4 random balls (type will be picked randomly)
+  ];
+
+  // Shuffle the array to randomize positions
+  for (let i = ballTypes.length - 1; i > 0; i--) {
+    const j = Math.floor(globalState.randomGenerator() * (i + 1));
+    [ballTypes[i], ballTypes[j]] = [ballTypes[j], ballTypes[i]];
+  }
+
+  // Create objects with specified types
+  for (let i = 0; i < numObjects; i++) {
+    let newObject = generateRandomObject(false, ballTypes[i]);
+    globalState.objects.push(newObject);
+  }
+  // ====================================================================
+
+  // ========== NEW: Add bomb as 11th ball (50% chance) ==========
+  const shouldHaveBomb = globalState.randomGenerator() < 1;  // 50% chance
+
+  if (shouldHaveBomb) {
+    let bombObject = generateRandomObject(false, 'normal');
+
+    // Convert to bomb with special properties
+    bombObject.type = 'gray_hazard';
+    bombObject.isHazard = true;
+    bombObject.isBomb = true;  // NEW: Flag to identify the bomb
+    bombObject.canBeSelected = false;  // NEW: Cannot be selected
+    bombObject.penaltyAmount = 1.0;  // Instant game over (high penalty)
+    bombObject.penaltyCooldownFrames = 0;  // No cooldown needed
+    bombObject.penaltyLastAppliedAt = -Infinity;
+
+    // Make it larger and visually distinct
+    bombObject.radius = 50;  // Larger than normal (15)
+    bombObject.colorFill = '#FF0000';  // Bright red center
+    bombObject.colorStroke = '#000000';  // Black outline
+
+    // Assign special index to distinguish from selectable balls
+    bombObject.index = numObjects;  // Index 10 (if NUM_OBJECTS = 10)
+
+    globalState.objects.push(bombObject);
+  }
+  // ============================================================
 }
 
 function adjustObjectForRefreshRate(obj) {

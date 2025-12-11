@@ -34,6 +34,7 @@ import { showEnterEducationTrials, showMultipleAttempts } from "./instructions";
 import { redrawAll } from "./logic/drawing";
 import { initializeObjects, initializePlayer } from "./logic/initialize";
 import { checkIfUserExists } from "./firebase/saveData2Firebase.js";
+import { initializeTrialLoader } from "./data/trialLoader.js";
 
 if (window.location.hostname === "localhost") {
   const url = new URL(window.location.href);
@@ -58,6 +59,9 @@ if (urlParams.AI_HELP !== undefined) {
 }
 if (urlParams.DEBUG !== undefined) {
   globalState.isDebugMode = urlParams.DEBUG;
+}
+if (urlParams.USE_STATIC_TRIALS !== undefined) {
+  globalState.USE_STATIC_TRIALS = urlParams.USE_STATIC_TRIALS === 'true';
 }
 
 User.prolific_pid = generateUID();
@@ -154,6 +158,18 @@ async function initExperimentEnvironment() {
 
 async function startExperiment(skipConsent = false, skipEducation = false) {
   try {
+    // Initialize trial loader if using static trials
+    if (globalState.USE_STATIC_TRIALS) {
+      console.log('🎲 Loading pre-generated trials...');
+      const loaded = await initializeTrialLoader();
+      if (loaded) {
+        console.log('✓ Pre-generated trials loaded successfully');
+      } else {
+        console.warn('⚠ Failed to load pre-generated trials, falling back to random generation');
+        globalState.USE_STATIC_TRIALS = false;
+      }
+    }
+
     await loadModal();
 
     const userExists = await checkIfUserExists(User.prolific_pid);
