@@ -195,7 +195,9 @@ function adjustObjectForRefreshRate(obj) {
 
     // sensible defaults so solver/animation don't crash
     type: obj.type ?? 'normal',                // or BALL_TYPES.NORMAL
-    turnAfterFrames: obj.turnAfterFrames ?? null,
+    turnAfterFrames: obj.turnAfterFrames != null
+      ? Math.round(obj.turnAfterFrames * globalState.speedMultiplier)
+      : null,
     turnStrategy: obj.turnStrategy ?? null,
     turnAngle: obj.turnAngle ?? null,
 
