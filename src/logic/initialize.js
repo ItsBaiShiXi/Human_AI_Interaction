@@ -20,7 +20,7 @@ function pickBallType(rngFn) {
   if (p < 0.15) return 'blue';
   if (p < 0.45) return 'green_turner';
   // if (p < 0.55) return 'gray_hazard';
-  return 'normal';
+  return 'red';
 }
 
 /**
@@ -129,9 +129,9 @@ function initializeObjectsRandomly() {
   const numObjects = globalState.NUM_OBJECTS;
 
   // ========== NEW: Create objects with specific distribution ==========
-  // 2 normal (red), 2 blue, 2 green_turner, 4 random
+  // 2 red, 2 blue, 2 green_turner, 4 random
   const ballTypes = [
-    'normal', 'normal',           // 2 red balls
+    'red', 'red',                 // 2 red balls
     'blue', 'blue',               // 2 blue balls
     'green_turner', 'green_turner', // 2 green balls
     null, null, null, null        // 4 random balls (type will be picked randomly)
@@ -154,7 +154,7 @@ function initializeObjectsRandomly() {
   const shouldHaveBomb = globalState.randomGenerator() < 1;  // 50% chance
 
   if (shouldHaveBomb) {
-    let bombObject = generateRandomObject(false, 'normal');
+    let bombObject = generateRandomObject(false, 'red');
 
     // Convert to bomb with special properties
     bombObject.type = 'gray_hazard';
@@ -194,7 +194,7 @@ function adjustObjectForRefreshRate(obj) {
     initDY: obj.initDY != null ? obj.initDY / globalState.speedMultiplier : dY,
 
     // sensible defaults so solver/animation don't crash
-    type: obj.type ?? 'normal',                // or BALL_TYPES.NORMAL
+    type: obj.type ?? 'red',                   // or BALL_TYPES.NORMAL
     turnAfterFrames: obj.turnAfterFrames != null
       ? Math.round(obj.turnAfterFrames * globalState.speedMultiplier)
       : null,
@@ -215,7 +215,7 @@ function adjustObjectForRefreshRate(obj) {
 /**
  * Generates a random object positioned far from the center.
  * @param {boolean} isEasyMode - Whether to use easy mode value scaling
- * @param {string} type - Ball type ('normal', 'blue', 'green_turner', or null for random)
+ * @param {string} type - Ball type ('red', 'blue', 'green_turner', or null for random)
  */
 function generateRandomObject(isEasyMode, type = null) {
   let x0, y0, dx, dy, speed;

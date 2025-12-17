@@ -245,7 +245,7 @@ export function createChoiceFromSolution(solution, ai_assisted_flag = "no_ai") {
   const selected_objects = solution.objDetails.map((obj) => {
     // Get ball type from globalState.objects using objIndex
     const ballObj = globalState.objects[obj.objIndex];
-    const ball_type = ballObj?.type ?? 'normal';
+    const ball_type = ballObj?.type ?? 'red';
 
     return {
       object_index: obj.objIndex,
@@ -289,5 +289,5 @@ export function recordBestChoiceData(trial, bestSolution) {
  * @property {boolean} is_intercepted
  * @property {number} final_value
  * @property {number} total_value
- * @property {string} ball_type // 'normal', 'blue', 'green_turner', 'gray_hazard'
+ * @property {string} ball_type // 'red', 'blue', 'green_turner', 'gray_hazard'
  */

@@ -1,4 +1,4 @@
-import { ARROW_FACTOR, GAME_RADIUS, playerImage } from "../data/constant.js";
+import { ARROW_FACTOR, GAME_RADIUS, playerImage, trapImage } from "../data/constant.js";
 import { AI_HELP_TYPE, globalState } from "../data/variable.js";
 import { canvas, ctx } from "../data/domElements.js";
 import { isAttentionCheck } from "../utils/utils.js";
@@ -102,23 +102,77 @@ export function drawObjects() {
         ctx.fill();
       }
 
-      // Calculate color with fade effect for blue balls
-      let fillColor = object.colorFill || object.color || 'red';
-      if (object.type === 'blue' && object.initialValue !== undefined && object.initialValue > 0) {
-        // Calculate fade ratio (0 = fully faded, 1 = full blue)
-        const fadeRatio = object.value / object.initialValue;
-        // Interpolate from blue (#2b6fff) to light gray (#d0d0d0)
-        const r = Math.round(43 + (208 - 43) * (1 - fadeRatio));
-        const g = Math.round(111 + (208 - 111) * (1 - fadeRatio));
-        const b = Math.round(255 + (208 - 255) * (1 - fadeRatio));
-        fillColor = `rgb(${r}, ${g}, ${b})`;
-      }
+      // Check if this is a trap/bomb - draw image instead of circle
+      if (object.type === 'gray_hazard' || object.isBomb) {
+        // Draw trap image with circular black border
+        if (trapImage.complete && trapImage.naturalWidth !== 0) {
+          const imageSize = object.radius * 2; // Use diameter as image size
+          const imageX = object.x - imageSize / 2;
+          const imageY = object.y - imageSize / 2;
 
-      // Draw the object's filled area
-      ctx.beginPath();
-      ctx.arc(object.x, object.y, object.radius * object.value, 0, Math.PI * 2);
-      ctx.fillStyle = fillColor;
-      ctx.fill();
+          // Save context state
+          ctx.save();
+
+          // Create circular clipping path
+          ctx.beginPath();
+          ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
+          ctx.clip();
+
+          // Draw the trap image (will be clipped to circle)
+          ctx.drawImage(trapImage, imageX, imageY, imageSize, imageSize);
+
+          // Restore context to remove clipping
+          ctx.restore();
+
+          // Draw circular black border
+          const borderWidth = 4;
+          ctx.beginPath();
+          ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = borderWidth;
+          ctx.stroke();
+        } else {
+          // Fallback: draw circle if image not loaded
+          ctx.beginPath();
+          ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
+          ctx.fillStyle = '#FF0000';
+          ctx.fill();
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
+      } else {
+        // Normal ball drawing (not a trap)
+        // Calculate color with fade effect for blue balls
+        let fillColor = object.colorFill || object.color || 'red';
+        if (object.type === 'blue' && object.initialValue !== undefined && object.initialValue > 0) {
+          // Calculate fade ratio (0 = fully faded, 1 = full blue)
+          const fadeRatio = object.value / object.initialValue;
+          // Interpolate from blue (#2b6fff) to light gray (#d0d0d0)
+          const r = Math.round(43 + (208 - 43) * (1 - fadeRatio));
+          const g = Math.round(111 + (208 - 111) * (1 - fadeRatio));
+          const b = Math.round(255 + (208 - 255) * (1 - fadeRatio));
+          fillColor = `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // Draw the object's filled area
+        ctx.beginPath();
+        ctx.arc(object.x, object.y, object.radius * object.value, 0, Math.PI * 2);
+        ctx.fillStyle = fillColor;
+        ctx.fill();
+
+        // Draw the object's border (stroke) - same color as fill for consistency
+        let strokeColor = object.colorStroke || object.color || 'red';
+        if (object.type === 'blue' && object.initialValue !== undefined && object.initialValue > 0) {
+          strokeColor = fillColor; // Use the same faded color for stroke
+        }
+
+        ctx.beginPath();
+        ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = strokeColor;
+        ctx.stroke();
+      }
 
       // Set text alignment and baseline for centering
       if (globalState.isDebugMode) {
@@ -129,21 +183,6 @@ export function drawObjects() {
         ctx.font = `${fontSize}px Arial`;
         ctx.fillText(index, object.x, object.y);
       }
-
-      // Calculate stroke color with fade effect for blue balls
-      let strokeColor = object.colorStroke || object.color || 'red';
-      if (object.type === 'blue' && object.initialValue !== undefined && object.initialValue > 0) {
-        strokeColor = fillColor; // Use the same faded color for stroke
-      }
-
-      // Draw the object's border
-      ctx.beginPath();
-      ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
-      ctx.lineWidth = 3;
-      //ctx.fillStyle = 'rgba(14, 13, 13, 0.3)'; // Glow effect
-      ctx.strokeStyle = strokeColor;
-      ctx.stroke();
-      //ctx.fill();
 
       // Draw selection number if selected
       if (object.isSelected) {

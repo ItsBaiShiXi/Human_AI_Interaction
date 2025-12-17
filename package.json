@@ -16,7 +16,8 @@
   "scripts": {
     "start": "webpack serve --open --no-cache",
     "build": "webpack --mode production --no-cache",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "npm run build && gh-pages -d dist",
+    "generate-trials": "node scripts/generateTrials.mjs"
   },
   "files": [
     "src/*"
