@@ -69,7 +69,7 @@ export function getTimerValue(mode) {
     totalPausedTime += now - timer.lastPauseTime;
   }
 
-  return Math.max(0, elapsed - totalPausedTime);
+  return Math.round(Math.max(0, elapsed - totalPausedTime));
 }
 
 /**

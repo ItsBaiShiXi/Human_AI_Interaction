@@ -1,0 +1,43 @@
+/* styles for instruction page2 */
+
+.page2-container {
+  display: block;
+  position: relative;
+  text-align: center;
+}
+
+.page2-image {
+  max-width: 85%;
+  margin-top: 80px;
+  height: auto;
+  display: inline-block;
+}
+
+.page2-arrow-container {
+  position: absolute;
+  top: -10px;
+  right: 110px;
+  z-index: 10; /* on top of the img */
+  text-align: center;
+}
+
+.page2-long-arrow {
+  width: 3px; /* 线条宽度 */
+  height: 110px; /* 线条长度 */
+  background-color: blue;
+
+  position: relative;
+  margin: 0 auto;
+}
+
+.page2-long-arrow::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  /* triangle */
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 15px solid blue;
+}

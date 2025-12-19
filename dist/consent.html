@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Information Sheet</title>
+    <style>
+      .header {
+        width: 100%;
+        background-color: #305f8e;
+        color: white;
+        padding: 15px 0;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .consentSubContainer {
+        width: 60%;
+        margin: 20px auto 20px auto;
+        background: white;
+        padding: 50px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 3px solid #003366;
+        text-align: left;
+      }
+
+      .header-container {
+        display: flex;
+        justify-content: space-between; /* Distributes items evenly */
+        align-items: center; /* Aligns vertically */
+        padding-left: 50px;
+        padding-right: 20px; /* Adds spacing */
+        margin-bottom: 10px;
+      }
+      .welcomeText {
+        font-weight: bold;
+        font-size: 30px;
+        color: #305f8e;
+      }
+
+      .consentSubContainer hr {
+        margin-top: 30px;
+        margin-bottom: 30px;
+      }
+      .section-title {
+        font-weight: bold;
+        font-size: 20px;
+        margin-top: 35px;
+        margin-left: 10px;
+      }
+      .section-content {
+        margin-top: 10px;
+        margin-right: 10px;
+        padding-left: 30px;
+        line-height: 1.5;
+      }
+      .bullet-list {
+        margin-left: 20px;
+        padding-left: 20px;
+        margin-bottom: 20px;
+      }
+      .bullet-list li {
+        margin-bottom: 15px;
+      }
+
+      .checkbox-container {
+        margin: 30px;
+        padding: 15px;
+        border: 2px solid #003366;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+        display: flex;
+        align-items: center;
+        line-height: 1.5;
+      }
+      .consentSubContainer input[type="checkbox"] {
+        margin-right: 10px;
+      }
+      .consentButtonContainer {
+        display: flex;
+        justify-content: center;
+      }
+      #proceedButton {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: block;
+        width: 60%;
+        align-items: center;
+        text-align: center;
+      }
+      #proceedButton:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+      #proceedbutton:hover:enabled {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <div class="header">Target Intercept Game</div> -->
+
+    <div class="consentSubContainer">
+      <div class="header-container">
+        <p class="welcomeText">Welcome to the experiment!</p>
+        <div class="logo-container">
+          <img src="./uci_logo2.png" alt="UCI Logo" />
+        </div>
+      </div>
+      <ul class="bullet-list">
+        <li>
+          Please carefully read the information below before you decide to
+          participate in this study. If you have any questions, please contact
+          the lead researcher.
+        </li>
+        <li>
+          <strong>Participation in this study is voluntary.</strong> There are
+          no alternative procedures available. The only alternative is not to
+          participate in this study. You may refuse to participate or withdraw
+          at any time.
+        </li>
+      </ul>
+
+      <hr />
+
+      <h2 style="text-align: center">Study Information Sheet</h2>
+      <p class="section-title">Project Summary</p>
+      <p class="section-content">
+        This experiment examines how people plan and adapt in a dynamic
+        environment. You will play a video game where you select and intercept
+        moving objects with different values. Your goal is to maximize your
+        score in each trial.
+      </p>
+
+      <p class="section-title">Time Commitment</p>
+      <p class="section-content">
+        This study typically takes less than <em><strong>1 hour</strong></em> to
+        complete.
+      </p>
+
+      <p class="section-title">Benefits & Risks</p>
+      <p class="section-content">
+        There is no risk in participating in this study.<br />
+        There are no direct benefits from participation in the study.
+      </p>
+
+      <p class="section-title">Eligibility Requirements</p>
+      <p class="section-content">
+        You may participate <strong>only once</strong> in this study. You are
+        eligible to participate in this study if you are:
+      </p>
+      <ul style="margin-left: 20px">
+        <li style="margin-bottom: 5px">A United States citizen/resident</li>
+        <li style="margin-bottom: 5px">18 years or older</li>
+        <li style="margin-bottom: 5px">An English speaker</li>
+      </ul>
+
+      <p class="section-title">Reimbursement & Compensation</p>
+      <p class="section-content">
+        You will receive <strong>$12.00 <em>USD</em></strong> for your
+        participation via Prolific.
+      </p>
+      <p class="section-content">
+        <strong><u>Note:</u></strong> This study includes comprehension and attention checks to ensure participants complete the tasks honestly
+        and thoroughly. If you fail these checks, you will not be compensated.
+        <br />
+        Do not refresh your browser during the study, as it will cause data loss
+        and you will not be compensated.
+      </p>
+
+      <p class="section-title">Confidentiality & Anonymity</p>
+      <p class="section-content">
+        All research data collected will be stored securely and confidentially
+        on a password-protected server indefinitely. Identifying details will
+        not be associated with any data provided by you as part of any
+        publication or presentation.
+      </p>
+
+      <p class="section-title">Future Research Use</p>
+      <p class="section-content">
+        Once the study is done, we may share the information collected with
+        other researchers so they can use it for other studies in the future.
+      </p>
+
+      <p class="section-title">Contact Information</p>
+      <p class="section-content"></p>
+      <p class="section-content">
+        University of California, Irvine - Department of Computer Science
+      </p>
+      <p class="section-content">
+        <strong>Lead Researcher:</strong>
+        <em>Shang Wu</em> (<a href="mailto:shangw13@uci.edu">shangw13@uci.edu</a
+        >)
+        <br />
+        <strong>Faculty Sponsor:</strong>
+        <em>Padhraic Smyth</em> (<a href="mailto:smyth@ics.uci.edu"
+          >smyth@ics.uci.edu</a
+        >)
+      </p>
+
+      <hr />
+      <div class="checkbox-container">
+        <input type="checkbox" id="confirmParticipation" />
+        <label for="confirmParticipation"
+          ><strong>Check here</strong> to confirm that: you have read and
+          understood this <em>Study Information Sheet</em>, you are taking part
+          in this research study voluntarily, you meet the eligibility
+          requirements, and you agree that your anonymized data may be shared in
+          public repositories.</label
+        >
+      </div>
+
+      <div class="consentButtonContainer">
+        <button id="proceedButton" disabled>Submit and Proceed</button>
+      </div>
+    </div>
+  </body>
+</html>

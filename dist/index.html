@@ -1,0 +1,115 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Task Demonstration</title><style>body {
+        font-family: Arial, sans-serif !important;
+        font-size: 16px !important;
+        line-height: normal !important;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background-color: #cce7ff; /* Light blue background */
+      }
+      canvas {
+        display: block;
+        margin: 20px auto;
+        position: relative;
+      }
+      #info,
+      #aiInfo,
+      #resultInfo {
+        width: 400px; /* Adjust the width if needed */
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border: 3px solid #171717;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        font-size: 18px;
+        font-weight: bold;
+        position: absolute;
+        left: 820px; /* Position to the right of the canvas */
+      }
+      #info {
+        top: 0; /* Align with the top of the canvas */
+      }
+      #resultInfo {
+        top: 550px; /* Adjust this value based on #info's height */
+      }
+      #aiInfo {
+        top: 700px; /* Adjust this value based on #info's height */
+      }
+      #info,
+      #aiInfo,
+      #resultInfo p {
+        margin: 0 0 20px 0;
+      }
+
+      #startButton,
+      #reselectButton,
+      #interceptionButton,
+      #replayButton,
+      #finishButton {
+        display: none;
+        width: 90%;
+        margin: 10px auto;
+        padding: 15px;
+        font-size: 18px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      #startButton:hover,
+      #reselectButton:hover,
+      #interceptionButton:hover,
+      #replayButton:hover,
+      #finishButton:hover {
+        background-color: #0056b3; /* Change color on hover */
+      }
+      #startButton:focus,
+      #reselectButton:focus,
+      #interceptionButton:focus,
+      #replayButton:focus,
+      #finishButton:focus {
+        outline: none; /* Remove focus outline */
+      }
+      /* Style for disabled button */
+      #reselectButton:disabled,
+      #replayButton:disabled {
+        background-color: gray;
+        color: white;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      #aiRequest {
+        display: none;
+        width: 90%;
+        margin: 10px auto;
+        padding: 15px;
+        font-size: 18px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      #aiRequest:hover {
+        background-color: #0056b3; /* Change color on hover */
+      }
+      #aiRequest:focus {
+        outline: none; /* Remove focus outline */
+      }
+      /* Style for disabled button */
+      #aiRequest:disabled {
+        background-color: gray;
+        color: white;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .container {
+        position: relative;
+        width: 1210px; /* Canvas width + info width */
+        margin: auto;
+      }</style><script defer="defer" src="main.bundle.js"></script></head><body><div class="container"><div id="consentContainer"></div><div id="instructionsContainer" style="display: none"></div><div id="modalContainer" style="display: none"></div><div id="experimentContainer" style="display: none"><div style="position: relative; width: 810px; height: 810px"><canvas id="gameCanvas" width="810" height="810"></canvas></div><div id="info"><h1>Instructions</h1><button id="replayButton" style="display: none">Replay Sequence</button> <button id="aiRequest">Show AI solution</button><div id="infoContent" style="text-align: left; line-height: 1.2"><p>Press the button when ready to continue. Please observe object values and movements carefully.</p></div><button id="startButton">Start Next Sequence</button> <button id="reselectButton">Reselect</button> <button id="interceptionButton">Start Interception</button> <button type="button" id="finishButton">Finish</button></div><div id="resultInfo"><h1>Results</h1><div id="resultInfoContent" style="text-align: left"></div></div><div id="aiInfo" style="display: none"><h1>AI Assistance</h1><div id="aiInfoContent" style="text-align: left"><p>Not provided in this session</p></div></div></div><div id="feedbackContainer" style="display: none"></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script></body></html>
