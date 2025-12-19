@@ -57,9 +57,10 @@ npm run generate-trials -- --trials 50     # Generate 50 trials per set
 Objects are stored in `globalState.objects` array with properties:
 - `initX0, initY0`: Initial position
 - `initDX, initDY`: Initial velocity (pixels per frame)
-- `type`: Object type from `BALL_TYPES` (normal, blue, green_turner, gray_hazard)
+- `type`: Object type from `BALL_TYPES` (red, blue, green_turner, bomb)
 - `value`: Score value of the object (sampled from Beta distribution)
 - `initialValue`: Original value (for blue balls to track decay)
+- `isBomb`: Boolean flag identifying bomb objects (used for collision detection)
 
 #### Ball Types
 
@@ -91,13 +92,15 @@ Objects are stored in `globalState.objects` array with properties:
   - Phase 2: Adjust to post-turn trajectory
 - **State tracking**: `hasTurned`, `turnAfterFrames`, `turnStrategy`
 
-**Gray Hazard (Bomb) Ball**
-- Hazard ball that freezes game on contact (~50% chance to spawn as 11th ball)
+**Bomb Ball**
+- Trap object that freezes game on contact (~100% chance to spawn as 11th ball)
+- **Type**: `type: 'bomb'` (distinct from selectable ball types)
 - **Size**: Larger radius (50px vs normal 15px)
+- **Visual**: Displays trap image (trap_img.png) with circular black border
 - **Collision**: Game freezes immediately when player touches it
 - **Scoring**: All remaining targets scored from frozen position (proximity-based)
 - **Properties**:
-  - `isHazard: true`
+  - `isBomb: true` (used for all runtime identification)
   - `penaltyAmount: 1.0` (not subtracted from score, just indicates bomb)
   - `canBeSelected: false`
 - **Animation freeze**: `animateInterception()` stops when `applyHazardPenalties()` returns `"bomb_hit"`
@@ -116,7 +119,7 @@ Scoring is handled by `computeObjectValue()` in `src/logic/computation/solutionE
 ```
 score = currentValue
 ```
-- For normal/green/gray balls: `currentValue = object.value` (static)
+- For normal/green/bomb balls: `currentValue = object.value` (static)
 - For blue balls: `currentValue = getBlueBallValue(object, frame, ...)` (time-adjusted)
 
 #### Failed Interception (Proximity Scoring)
@@ -334,7 +337,7 @@ Each trial JSON contains:
       "initialValue": 0.0786,          // Initial value (preserved for blue ball decay)
 
       // Ball Type & Behavior
-      "type": "normal",                // Ball type: 'normal', 'blue', 'green_turner', 'gray_hazard'
+      "type": "red",                   // Ball type: 'red', 'blue', 'green_turner', 'bomb'
       "colorFill": "red",              // Fill color
       "colorStroke": "red",            // Stroke color
 
@@ -344,8 +347,8 @@ Each trial JSON contains:
       "turnAngle": null,               // Reserved for future (currently unused)
       "hasTurned": false,              // Runtime flag tracking turn state
 
-      // Hazard Properties (bombs only)
-      "isHazard": false,               // True for hazard objects
+      // Bomb Properties
+      "isBomb": false,                 // True for bomb objects (used for collision detection)
       "penaltyAmount": 0,              // Penalty value (1.0 for bombs)
       "penaltyCooldownFrames": 0,      // Immunity duration after hit
       "penaltyLastAppliedAt": null     // Runtime tracking of last penalty
@@ -367,7 +370,7 @@ Each trial JSON contains:
 - 2 × Blue balls - Time-decaying value (1.5× initial boost)
 - 2 × Green turner balls - 50% chance to reverse direction at ~3.5s
 - 4 × Random balls - Randomly assigned from above types
-- 1 × Bomb (50% chance) - Gray hazard, freezes game on contact
+- 1 × Bomb (100% spawn rate) - Trap object with type 'bomb', freezes game on contact
 
 **Key Logic Details:**
 
@@ -433,6 +436,7 @@ Defined in `src/data/constant.js`:
 - Solutions are pre-computed for all permutations and ranked by total value
 - Player movement is deterministic based on computed interception paths
 - **Blue ball decay**: Shared utility (`src/utils/blueballDecay.js`) ensures animation and AI use identical decay logic
+- **Bomb detection**: Single `isBomb` flag used for all runtime bomb identification; `type: 'bomb'` provides semantic clarity
 - **Bomb freeze**: Game state freezes on bomb contact; remaining targets scored from frozen position
 - **Proximity scoring**: Failed interceptions still contribute partial score based on final distance
 - **Green turner splits**: Two-phase interception handling when turn occurs during pursuit

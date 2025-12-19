@@ -18,5 +18,5 @@ export const BALL_TYPES = {
   NORMAL: 'red',
   BLUE: 'blue',
   GREEN_TURNER: 'green_turner',
-  GRAY_HAZARD: 'gray_hazard',
+  BOMB: 'bomb',
 };

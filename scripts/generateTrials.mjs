@@ -168,7 +168,7 @@ function generateRandomObject(rng, centerX, centerY, objectIndex, ballType = nul
     turnStrategy,
     turnAngle: null,
     hasTurned: false,
-    isHazard: false,
+    isBomb: false,
     penaltyAmount: 0,
     penaltyCooldownFrames: 0,
     penaltyLastAppliedAt: -Infinity,
@@ -205,8 +205,8 @@ function generateTrial(trialNumber, seed, numObjects = 10, centerX = 405, center
   if (shouldHaveBomb) {
     let bombObject = generateRandomObject(rng, centerX, centerY, numObjects, 'red');
 
-    bombObject.type = 'gray_hazard';
-    bombObject.isHazard = true;
+    // Bomb properties - set type to 'bomb' for semantic clarity
+    bombObject.type = 'bomb';
     bombObject.isBomb = true;
     bombObject.canBeSelected = false;
     bombObject.penaltyAmount = 1.0;

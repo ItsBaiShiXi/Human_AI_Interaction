@@ -81,8 +81,8 @@ export function getCurrentExperimentData() {
  * @property {Choice[]} user_choice
  * @property {CustomCount} replay_num
  * @property {CustomCount} reselect_num
- * @property {CustomCount} think_time // seconds, 第一次动画结束到开始拦截
- * @property {CustomCount} total_time // seconds, 每一轮trial总时间
+ * @property {CustomCount} think_time // milliseconds, time from first observation end to interception start
+ * @property {CustomCount} total_time // milliseconds, total time per trial
  * @property {boolean} is_attention_check
  * @property {boolean} is_comprehension_check
  * @property {boolean} user_hit_bomb // whether user hit the bomb (freeze trap)
@@ -178,7 +178,7 @@ export function updateTrialData(
   trial.best_hit_bomb = bestSolution.bombHit ?? false;
 
   recordBestChoiceData(trial, bestSolution);
-  addToCustomCount(trial.total_time, trialSec, isAfterAI); // todo fsy: total time 的trialSec会一直累加
+  addToCustomCount(trial.total_time, trialSec, isAfterAI); // trialSec is in milliseconds
 }
 
 /**
@@ -213,7 +213,7 @@ export function getCurrentTrialData(isComprehensionCheck) {
 /**
  * Adds a numeric value to a CustomCount field.
  * @param {CustomCount} countObj
- * @param {number} value - Value to add (in seconds)
+ * @param {number} value - Value to add (in milliseconds for time, count for replay/reselect)
  * @param {boolean} isAfterAI
  */
 export function addToCustomCount(countObj, value, isAfterAI) {
@@ -289,5 +289,5 @@ export function recordBestChoiceData(trial, bestSolution) {
  * @property {boolean} is_intercepted
  * @property {number} final_value
  * @property {number} total_value
- * @property {string} ball_type // 'red', 'blue', 'green_turner', 'gray_hazard'
+ * @property {string} ball_type // 'red', 'blue', 'green_turner', 'bomb'
  */

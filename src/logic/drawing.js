@@ -6,7 +6,8 @@ import { isAttentionCheck } from "../utils/utils.js";
 // Function to draw arrows indicating direction and speed
 function drawArrows() {
   globalState.objects.forEach((object) => {
-    if (!object.isIntercepted) {
+    // Skip drawing arrows for bombs
+    if (!object.isIntercepted && !object.isBomb) {
       // Use current velocity if the animation step set it; fall back to initial
       const vx = object.currDX ?? object.dX;
       const vy = object.currDY ?? object.dY;
@@ -103,7 +104,7 @@ export function drawObjects() {
       }
 
       // Check if this is a trap/bomb - draw image instead of circle
-      if (object.type === 'gray_hazard' || object.isBomb) {
+      if (object.isBomb) {
         // Draw trap image with circular black border
         if (trapImage.complete && trapImage.naturalWidth !== 0) {
           const imageSize = object.radius * 2; // Use diameter as image size
@@ -175,7 +176,8 @@ export function drawObjects() {
       }
 
       // Set text alignment and baseline for centering
-      if (globalState.isDebugMode) {
+      // Skip displaying debug text for bombs
+      if (globalState.isDebugMode && !object.isBomb) {
         ctx.textAlign = "center"; // Aligns text horizontally to the center
         ctx.textBaseline = "middle"; // Aligns text vertically to the center
         ctx.fillStyle = "rgb(0, 0, 0)";

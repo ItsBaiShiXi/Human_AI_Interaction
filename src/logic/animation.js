@@ -141,15 +141,18 @@ function applyHazardPenalties(frame) {
 
   for (const obj of globalState.objects) {
     if (obj.isIntercepted) continue;
-    if (!obj.isHazard) continue;
+    if (!obj.isBomb) continue;  // Only check for bombs (traps)
 
     const dx = obj.x - px;
     const dy = obj.y - py;
     const dist = Math.hypot(dx, dy);
     const or = obj.radius || 15;
 
-    // basic circle overlap
-    if (dist <= pr + or) {
+    // Add a small buffer (10px) to collision threshold for better detection
+    const collisionThreshold = pr + or + 10;
+
+    // basic circle overlap with buffer
+    if (dist <= collisionThreshold) {
       // Check cooldown, if any (currently 0 cold down)
       const cooldownOk = (frame - obj.penaltyLastAppliedAt) >= (obj.penaltyCooldownFrames || 0);
       if (cooldownOk) {
@@ -157,7 +160,10 @@ function applyHazardPenalties(frame) {
         if (typeof globalState.penaltyPoints !== 'number') globalState.penaltyPoints = 0;
         globalState.penaltyPoints += (obj.penaltyAmount || 0);
         obj.penaltyLastAppliedAt = frame;
-        
+
+        // Mark that bomb was hit this round
+        globalState.bombHit = true;
+
         // RETURN STATUS TO STOP GAME
         return "bomb_hit";
       }

@@ -20,6 +20,8 @@ export function showFeedback() {
       const aiFeedback = document.getElementById("aiFeedback");
       const freeResponse = document.getElementById("freeResponse");
       const charCount = document.getElementById("charCount");
+      const rulesResponse = document.getElementById("rulesResponse");
+      const rulesCharCount = document.getElementById("rulesCharCount");
       const submitFeedback = document.getElementById("submitFeedback");
       const radioGroups = document.querySelectorAll("input[type='radio']");
       const thankYouMessage = document.getElementById("thankYouMessage");
@@ -52,22 +54,30 @@ export function showFeedback() {
         });
       }
 
+      if (rulesResponse && rulesCharCount) {
+        rulesResponse.addEventListener("input", () => {
+          rulesCharCount.textContent = `${rulesResponse.value.length} / 500`;
+        });
+      }
+
       if (submitFeedback) {
         submitFeedback.disabled = true;
         submitFeedback.addEventListener("click", () =>
-          submit(freeResponse, submitFeedback, thankYouMessage)
+          submit(freeResponse, rulesResponse, submitFeedback, thankYouMessage)
         );
       }
     });
 }
 
-async function submit(freeResponse, submitButton, thankYouMessage) {
+async function submit(freeResponse, rulesResponse, submitButton, thankYouMessage) {
   const now = getCurrentDate();
 
   let freeResponseText = freeResponse.value.trim();
+  let rulesResponseText = rulesResponse.value.trim();
   let feedbackData = {
     choices: {},
     freeResponse: freeResponseText,
+    rulesResponse: rulesResponseText,
     submittedAt: now,
   };
 

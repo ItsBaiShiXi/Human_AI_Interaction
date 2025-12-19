@@ -9,7 +9,6 @@ import { globalState } from "../data/variable.js";
 import { sampleBeta, isAttentionCheck } from "../utils/utils.js";
 import educate1Objects from "../data/educate1_objects.json";
 import educate2Objects from "../data/educate2_objects.json";
-import { BALL_TYPES } from "../data/constant.js";
 import { loadTrial } from "../data/trialLoader.js";
 
 function pickBallType(rngFn) {
@@ -157,10 +156,9 @@ function initializeObjectsRandomly() {
     let bombObject = generateRandomObject(false, 'red');
 
     // Convert to bomb with special properties
-    bombObject.type = 'gray_hazard';
-    bombObject.isHazard = true;
-    bombObject.isBomb = true;  // NEW: Flag to identify the bomb
-    bombObject.canBeSelected = false;  // NEW: Cannot be selected
+    bombObject.type = 'bomb';
+    bombObject.isBomb = true;
+    bombObject.canBeSelected = false;
     bombObject.penaltyAmount = 1.0;  // Instant game over (high penalty)
     bombObject.penaltyCooldownFrames = 0;  // No cooldown needed
     bombObject.penaltyLastAppliedAt = -Infinity;
@@ -201,7 +199,7 @@ function adjustObjectForRefreshRate(obj) {
     turnStrategy: obj.turnStrategy ?? null,
     turnAngle: obj.turnAngle ?? null,
 
-    isHazard: obj.isHazard ?? false,
+    isBomb: obj.isBomb ?? false,
     penaltyAmount: obj.penaltyAmount ?? 0,
     penaltyCooldownFrames: obj.penaltyCooldownFrames ?? 0,
     penaltyLastAppliedAt: obj.penaltyLastAppliedAt ?? -Infinity,
@@ -263,9 +261,6 @@ function generateRandomObject(isEasyMode, type = null) {
   let turnAfterFrames = null;
   let turnStrategy = null;
   let turnAngle = null;
-  let isHazard = false;
-  let penaltyAmount = 0;
-  let penaltyCooldownFrames = 0;
 
   switch (type) {
     case 'blue':
@@ -281,13 +276,6 @@ function generateRandomObject(isEasyMode, type = null) {
         turnAfterFrames = Math.round(3.5 * globalState.refreshRate);
         turnStrategy = 'reverse'; // Only 180° turns allowed
       }
-      break;
-
-    case 'gray_hazard':
-      colorFill = colorStroke = '#888888';
-      isHazard = true;
-      penaltyAmount = 0.1;
-      penaltyCooldownFrames = Math.round(0.5 * globalState.refreshRate); // immune for 0.5s after hit
       break;
 
     // normal default red
@@ -343,10 +331,10 @@ function generateRandomObject(isEasyMode, type = null) {
     turnStrategy,         // always 'reverse' for 180° turns
     turnAngle,            // not used (kept for compatibility)
 
-    // NEW: hazard-specific
-    isHazard,            // convenience flag
-    penaltyAmount,           // points deducted on contact
-    penaltyCooldownFrames,   // to prevent rapid multiple hits
+    // Bomb-specific properties (set defaults for normal balls)
+    isBomb: false,
+    penaltyAmount: 0,
+    penaltyCooldownFrames: 0,
     penaltyLastAppliedAt: -Infinity,
 
     // NEW: colors

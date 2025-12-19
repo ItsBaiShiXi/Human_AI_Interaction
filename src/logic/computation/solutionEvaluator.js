@@ -451,12 +451,8 @@ function circlesOverlap(x1, y1, r1, x2, y2, r2) {
   return (dx * dx + dy * dy) <= (r1 + r2) * (r1 + r2);
 }
 
-function isHazard(obj) {
-  return !!obj.isHazard && !obj.isIntercepted;
-}
-
 /**
- * Accumulates hazard penalties with per-hazard cooldown.
+ * Accumulates bomb penalties with per-bomb cooldown.
  * Returns { penaltyPoints, penaltyHits }.
  */
 function stepPhaseConstant(player, objects, dX, dY, frames, simFrameStart) {
@@ -471,7 +467,7 @@ function stepPhaseConstant(player, objects, dX, dY, frames, simFrameStart) {
     const F = simFrameStart + t + 1;
 
     for (const obj of objects) {
-      if (!obj.isHazard || obj.isIntercepted) continue;
+      if (!obj.isBomb || obj.isIntercepted) continue;
 
       const { x, y } = getObjectStateAtFrame(obj, F);
       

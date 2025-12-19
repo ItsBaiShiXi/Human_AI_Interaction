@@ -382,7 +382,8 @@ export function startInterception() {
   hideInterceptionControls();
   // Reset per-run penalty counter
   globalState.penaltyPoints = 0;
-  
+  globalState.bombHit = false;
+
   computeUserSolution();
   resetInterceptionState();
   updateInterceptionInfo();
@@ -475,7 +476,10 @@ function displayTrialResults() {
                      rankNow
                    )} best solution</p>`;
 
-  if (intercepted === globalState.NUM_SELECTIONS) {
+  // Check if bomb was hit this round
+  if (globalState.bombHit) {
+    scoreText = `<p style="color: red; font-weight: bold;">You are trapped!</p>` + scoreText;
+  } else if (intercepted === globalState.NUM_SELECTIONS) {
     scoreText =
       `<p>Successfully intercept both selected objects</p>` + scoreText;
   } else if (intercepted === 1) {

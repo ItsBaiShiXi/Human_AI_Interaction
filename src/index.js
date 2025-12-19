@@ -38,7 +38,7 @@ import { initializeTrialLoader } from "./data/trialLoader.js";
 
 if (window.location.hostname === "localhost") {
   const url = new URL(window.location.href);
-  url.searchParams.set("DEBUG", "true");
+  //url.searchParams.set("DEBUG", "true");
   //url.searchParams.set("AI_HELP", AI_HELP_TYPE.OPTIMAL_AI_BEFORE);
   window.history.replaceState({}, "", url);
 }
@@ -191,6 +191,16 @@ if (globalState.isDebugMode) {
       skipEducation = true;
     }
 
+    // Check if we should skip directly to feedback page
+    if (urlParams.SKIP_TO_FEEDBACK === 'true') {
+      console.log("Skipping directly to feedback page");
+      // Set flags to indicate experiment completed successfully
+      globalState.curTrial = globalState.NUM_MAIN_TRIALS;
+      globalState.isComprehensionCheck = false;
+      experimentContainer.style.display = "block";
+      finishGame();
+      return;
+    }
 
     if (!skipConsent) {
       showConsent();
