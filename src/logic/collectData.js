@@ -81,9 +81,9 @@ export function getCurrentExperimentData() {
  * @property {Choice[]} user_choice
  * @property {CustomCount} replay_num
  * @property {CustomCount} reselect_num
- * @property {CustomCount} think_time // milliseconds, time from first observation end to interception start (focused only)
+ * @property {CustomCount} think_time // milliseconds, total time from first observation end to interception start (includes unfocused time)
  * @property {CustomCount} think_time_unfocused // milliseconds, time when window was not focused during thinking phase
- * @property {CustomCount} total_time // milliseconds, total time per trial (focused only)
+ * @property {CustomCount} total_time // milliseconds, total elapsed time per trial (includes unfocused time)
  * @property {CustomCount} total_time_unfocused // milliseconds, time when window was not focused during entire trial
  * @property {boolean} is_attention_check
  * @property {boolean} is_comprehension_check
@@ -112,10 +112,10 @@ export function createNewTrialData(
     user_choice: [], // []Choice
     replay_num: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
     reselect_num: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount
-    think_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (focused time)
-    think_time_unfocused: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (unfocused time)
-    total_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (focused time)
-    total_time_unfocused: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (unfocused time)
+    think_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (total elapsed time)
+    think_time_unfocused: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (unfocused time only)
+    total_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (total elapsed time)
+    total_time_unfocused: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (unfocused time only)
     is_comprehension_check: is_comprehension_check,
     is_attention_check: is_attention_check,
     user_hit_bomb: false,
@@ -165,7 +165,7 @@ export function updateExperimentData(
  * @param {Trial} trial - the current trial object
  * @param {Object} userSolution - user's solution object
  * @param {Object} bestSolution - best solution object
- * @param {number} trialSec - focused time in milliseconds
+ * @param {number} trialSec - total elapsed time in milliseconds
  * @param {number} trialUnfocusedSec - unfocused time in milliseconds
  * @param {boolean} isAfterAI - whether AI assistance was shown
  */
@@ -187,7 +187,7 @@ export function updateTrialData(
   trial.best_hit_bomb = bestSolution.bombHit ?? false;
 
   recordBestChoiceData(trial, bestSolution);
-  addToCustomCount(trial.total_time, trialSec, isAfterAI); // trialSec is in milliseconds (focused time)
+  addToCustomCount(trial.total_time, trialSec, isAfterAI); // trialSec is in milliseconds (total elapsed time)
   addToCustomCount(trial.total_time_unfocused, trialUnfocusedSec, isAfterAI); // unfocused time in milliseconds
 }
 

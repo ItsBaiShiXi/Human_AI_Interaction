@@ -55,9 +55,9 @@ export function stopTimer(mode) {
 }
 
 /**
- * Gets current recorded value in milliseconds (focused time only)
+ * Gets current recorded value in milliseconds (total elapsed time, including unfocused time)
  * @param {"trial" | "think"} mode
- * @returns {number} Time elapsed in milliseconds
+ * @returns {number} Total time elapsed in milliseconds
  */
 export function getTimerValue(mode) {
   const timer = activeTimers[mode];
@@ -66,13 +66,7 @@ export function getTimerValue(mode) {
   const now = performance.now();
   const elapsed = now - timer.startTime;
 
-  // Subtract paused time
-  let totalPausedTime = timer.pausedTime;
-  if (timer.isPaused && timer.lastPauseTime) {
-    totalPausedTime += now - timer.lastPauseTime;
-  }
-
-  return Math.round(Math.max(0, elapsed - totalPausedTime));
+  return Math.round(Math.max(0, elapsed));
 }
 
 /**
