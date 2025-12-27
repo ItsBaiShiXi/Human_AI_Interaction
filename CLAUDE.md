@@ -167,6 +167,12 @@ When player touches a bomb during interception:
   - User created on experiment start
   - Trial data saved when clicking "Start Next Sequence"
   - Feedback saved at completion
+- **Trial Fields Saved**:
+  - Time metrics: `think_time`, `think_time_unfocused`, `total_time`, `total_time_unfocused`
+  - Interaction metrics: `replay_num`, `reselect_num`
+  - Choice data: `user_choice`, `best_choice`, `ai_choice`
+  - Performance: `user_score`, `best_score`, `performance`
+  - Bomb tracking: `user_hit_bomb`, `best_hit_bomb`
 - **Module**: `src/firebase/saveData2Firebase.js`
 
 ### Experimental Conditions
@@ -182,9 +188,27 @@ Controlled via URL parameters:
 
 ### Data Collection
 `src/logic/collectData.js` tracks:
-- **Trial metrics**: think_time, replay_num, reselect_num, user_choice, user_score
+- **Trial metrics**:
+  - `think_time`: Time from observation end to interception start (focused window time only, in milliseconds)
+  - `think_time_unfocused`: Time when window was not focused during thinking phase (in milliseconds)
+  - `total_time`: Total time per trial (focused window time only, in milliseconds)
+  - `total_time_unfocused`: Time when window was not focused during entire trial (in milliseconds)
+  - `replay_num`: Number of times user replayed the observation phase
+  - `reselect_num`: Number of times user reselected objects
+  - `user_choice`: User's selected objects and their outcomes
+  - `user_score`: Total score achieved in the trial
 - **Experiment metrics**: failed_attention_check_count, is_finished
 - **User progress**: is_passed_education, is_passed_all_experiments
+
+**Time Tracking Details** (`src/logic/timeTracker.js`):
+- **Focused time**: Tracks time when user has the game window in focus
+  - Automatically pauses when tab is hidden or window loses focus
+  - Stored in `think_time` and `total_time` fields
+- **Unfocused time**: Tracks cumulative time when user does NOT have window focus
+  - Accumulated whenever window visibility changes from visible to hidden
+  - Stored in `think_time_unfocused` and `total_time_unfocused` fields
+- **CustomCount structure**: All time fields use `{ before_ai_show: 0, after_ai_show: 0, total: 0 }`
+  - Allows tracking time before and after AI assistance is shown
 
 #### Understanding Recorded Values: total_value vs user_score
 

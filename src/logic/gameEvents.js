@@ -23,7 +23,7 @@ import { initializeObjects, initializeObjectsFromTrialData, initializePlayer } f
 import { handleObjectSelection, handleMouseHover } from "./mouseEvents.js";
 import { lookupInterceptionPaths } from "./computation/solutionEvaluator.js";
 import { showFeedback } from "../feedback.js";
-import { startTimer, stopTimer, getTimerValue } from "./timeTracker.js";
+import { startTimer, stopTimer, getTimerValue, getUnfocusedTime } from "./timeTracker.js";
 import {
   getCurrentTrialData,
   getCurrentExperimentData,
@@ -69,11 +69,14 @@ function recordPreviousTrialData() {
 
   if (lastTrial) {
     const trialSec = getTimerValue("trial");
+    const trialUnfocusedSec = getUnfocusedTime("trial");
+
     updateTrialData(
       lastTrial,
       globalState.userSolution,
       globalState.bestSolution,
       trialSec,
+      trialUnfocusedSec,
       globalState.canShowAIAnswer || globalState.retryCnt > 0
     );
 
@@ -424,9 +427,17 @@ function recordTrialDataStartIntercept() {
   recordUserChoiceData(currentTrial, globalState.userSolution);
 
   const thinkTimeSec = getTimerValue("think");
+  const thinkTimeUnfocusedSec = getUnfocusedTime("think");
+
   addToCustomCount(
     currentTrial.think_time,
     thinkTimeSec,
+    globalState.canShowAIAnswer || globalState.retryCnt > 0
+  );
+
+  addToCustomCount(
+    currentTrial.think_time_unfocused,
+    thinkTimeUnfocusedSec,
     globalState.canShowAIAnswer || globalState.retryCnt > 0
   );
 }
