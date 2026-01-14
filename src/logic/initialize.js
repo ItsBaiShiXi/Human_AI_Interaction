@@ -65,11 +65,14 @@ export async function initializeObjectsFromTrialData(isComprehensionCheck, needR
 
   // Load pre-generated trial from JSON or Firebase
   try {
-    const trial = await loadTrial(globalState.curTrial);
+    const trial = await loadTrial(globalState.curTrial, {
+      isDifficultyCheck: globalState.isDifficultyCheck,
+    });
     globalState.objects = trial.objects.map((obj) =>
       adjustObjectForRefreshRate(obj)
     );
-    console.log(`Loaded trial ${globalState.curTrial} with ${globalState.objects.length} objects`);
+    const trialType = globalState.isDifficultyCheck ? 'difficulty check' : 'main';
+    console.log(`Loaded ${trialType} trial ${globalState.curTrial} with ${globalState.objects.length} objects`);
   } catch (error) {
     console.error(`Failed to load trial ${globalState.curTrial}, falling back to random generation:`, error);
     // Fall back to random generation if loading fails

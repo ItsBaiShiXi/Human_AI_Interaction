@@ -159,6 +159,11 @@ async function saveTrialData(expRef, trial) {
         collection(expRef, "comprehension_trials"),
         `${trial.trial_id}`
       );
+    } else if (trial.is_difficulty_check) {
+      trialRef = doc(
+        collection(expRef, "difficulty_check_trials"),
+        `${trial.trial_id}`
+      );
     } else {
       trialRef = doc(collection(expRef, "trials"), `${trial.trial_id}`);
     }
@@ -166,6 +171,7 @@ async function saveTrialData(expRef, trial) {
       trial_id: trial.trial_id,
       is_attention_check: trial.is_attention_check,
       is_comprehension_check: trial.is_comprehension_check,
+      is_difficulty_check: trial.is_difficulty_check || false,
       create_time: trial.create_time,
       end_time: trial.end_time,
       performance: trial.performance,

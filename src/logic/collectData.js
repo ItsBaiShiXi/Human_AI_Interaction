@@ -54,6 +54,7 @@ export function createNewExperimentData(experiment_id, num_trials) {
     num_trials,
     trials: [], // will be populated with Trial objects
     comprehension_trials: [],
+    difficulty_check_trials: [],
   };
 }
 
@@ -117,6 +118,7 @@ export function createNewTrialData(
     total_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (total elapsed time)
     total_time_unfocused: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (unfocused time only)
     is_comprehension_check: is_comprehension_check,
+    is_difficulty_check: globalState.isDifficultyCheck,
     is_attention_check: is_attention_check,
     user_hit_bomb: false,
     best_hit_bomb: false,
@@ -200,6 +202,15 @@ export function getCurrentTrialData(isComprehensionCheck) {
   if (!currentExperiment) {
     return null;
   }
+
+  // Handle difficulty check trials
+  if (globalState.isDifficultyCheck) {
+    if (currentExperiment.difficulty_check_trials?.length > 0) {
+      return currentExperiment.difficulty_check_trials[globalState.curTrial - 1];
+    }
+    return null;
+  }
+
   if (isComprehensionCheck) {
     // comprehension trials
     if (currentExperiment.comprehension_trials.length > 0) {

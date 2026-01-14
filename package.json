@@ -17,7 +17,9 @@
     "start": "webpack serve --open --no-cache",
     "build": "webpack --mode production --no-cache",
     "deploy": "npm run build && gh-pages -d dist",
-    "generate-trials": "node scripts/generateTrials.mjs"
+    "generate-trials": "node scripts/generateTrials.mjs",
+    "generate-difficulty-trials": "node scripts/generateTrials.mjs --difficulty",
+    "split-difficulty-trials": "node scripts/splitTrialsForDifficultyCheck.mjs"
   },
   "files": [
     "src/*"

@@ -136,13 +136,21 @@ function initializeTrialData() {
 
   const trialId = globalState.curTrial;
   const isComprehension = globalState.isComprehensionCheck;
+  const isDifficulty = globalState.isDifficultyCheck;
   const isAttention = isAttentionCheck();
   const curExp = User.experiments[globalState.curExperiment];
 
-  // Check if trial already exists (for comprehension trials only)
+  // Check if trial already exists
   if (
     isComprehension &&
     curExp.comprehension_trials.some((t) => t.trial_id === trialId)
+  ) {
+    return; // Trial already exists, do not re-add
+  }
+
+  if (
+    isDifficulty &&
+    curExp.difficulty_check_trials?.some((t) => t.trial_id === trialId)
   ) {
     return; // Trial already exists, do not re-add
   }
@@ -151,6 +159,11 @@ function initializeTrialData() {
 
   if (isComprehension) {
     curExp.comprehension_trials.push(newTrial);
+  } else if (isDifficulty) {
+    if (!curExp.difficulty_check_trials) {
+      curExp.difficulty_check_trials = [];
+    }
+    curExp.difficulty_check_trials.push(newTrial);
   } else {
     curExp.trials.push(newTrial);
   }
@@ -504,6 +517,23 @@ function displayTrialResults() {
 
 function handleComprehensionMode() {
   updateButtonVisibility(false);
+
+  // Difficulty check mode: no performance gating, always allow continuation
+  if (globalState.isDifficultyCheck) {
+    globalState.needRetry = false;
+    globalState.retryCnt = 0;
+
+    if (globalState.curTrial === globalState.NUM_DIFFICULTY_CHECK_TRIALS) {
+      // Completed all difficulty check trials
+      initializeExperimentData();
+      User.is_passed_education = true;
+      import("../firebase/saveData2Firebase.js").then((module) => {
+        module.saveOrUpdateUser(getCurrentDate());
+      });
+    }
+    return; // Skip performance check
+  }
+
   if (globalState.userSolution.totalValueProp * 100 === 100) {
     globalState.needRetry = false;
     globalState.retryCnt = 0;
@@ -533,11 +563,16 @@ function handleComprehensionMode() {
 }
 
 function handleMainMode() {
-  // Show correct button
-  updateButtonVisibility(globalState.curTrial === globalState.NUM_MAIN_TRIALS);
+  // Determine final trial count based on mode
+  const finalTrialCount = globalState.isDifficultyCheck
+    ? globalState.NUM_DIFFICULTY_CHECK_TRIALS
+    : globalState.NUM_MAIN_TRIALS;
 
-  // Check if current trial is an attention check trial
-  if (isAttentionCheck()) {
+  // Show correct button
+  updateButtonVisibility(globalState.curTrial === finalTrialCount);
+
+  // Skip attention checks for difficulty check mode
+  if (!globalState.isDifficultyCheck && isAttentionCheck()) {
     const passed = globalState.userSolution.totalValueProp * 100 === 100;
     if (!passed) {
       showFailedAttentionCheck();
@@ -572,7 +607,12 @@ export function finishGame() {
   stopTimer("think");
   stopTimer("trial");
 
-  if (globalState.curTrial == globalState.NUM_MAIN_TRIALS) {
+  // Determine final trial count based on mode
+  const finalTrialCount = globalState.isDifficultyCheck
+    ? globalState.NUM_DIFFICULTY_CHECK_TRIALS
+    : globalState.NUM_MAIN_TRIALS;
+
+  if (globalState.curTrial == finalTrialCount) {
     // finish all trials
     // Hide the main game container
     experimentContainer.style.display = "none";

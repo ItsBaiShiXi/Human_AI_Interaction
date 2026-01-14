@@ -4,6 +4,7 @@ export const globalState = {
 
   NUM_MAIN_TRIALS: 82,
   NUM_EDUCATION_TRIALS: 2,
+  NUM_DIFFICULTY_CHECK_TRIALS: 10,
   ATTENTION_CHECK_TRIALS: {
     16: false, // 15 + 1
     57: false, // 55 + 1
@@ -21,6 +22,7 @@ export const globalState = {
 
   AI_HELP: 0,
   isComprehensionCheck: false,
+  isDifficultyCheck: false,
   needRetry: false,
   retryCnt: 0,
 

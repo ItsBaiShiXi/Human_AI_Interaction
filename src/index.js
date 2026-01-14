@@ -63,6 +63,13 @@ if (urlParams.DEBUG !== undefined) {
 if (urlParams.USE_STATIC_TRIALS !== undefined) {
   globalState.USE_STATIC_TRIALS = urlParams.USE_STATIC_TRIALS === 'true';
 }
+if (urlParams.DIFFICULTY_CHECK !== undefined) {
+  globalState.isDifficultyCheck = urlParams.DIFFICULTY_CHECK === 'true';
+  if (globalState.isDifficultyCheck) {
+    globalState.AI_HELP = 0; // Force disable AI assistance
+    console.log("Difficulty check mode enabled: AI assistance disabled");
+  }
+}
 
 User.prolific_pid = generateUID();
 if (urlParams.PROLIFIC_PID !== undefined) {

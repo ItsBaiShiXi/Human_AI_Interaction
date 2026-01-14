@@ -16,6 +16,7 @@
  *   --objects <number>    Number of objects per trial (default: 10)
  *   --selections <number> Number of selections per trial (default: 2)
  *   --output <path>       Output directory (default: src/data/trials)
+ *   --difficulty          Generate difficulty check trials (10 trials, separate files)
  */
 
 import fs from 'fs';
@@ -276,10 +277,20 @@ function parseArgs() {
     objects: 10,
     selections: 2,
     output: path.join(__dirname, '..', 'src', 'data', 'trials'),
+    difficulty: false,
   };
 
-  for (let i = 0; i < args.length; i += 2) {
-    const key = args[i].replace('--', '');
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    // Handle flags without values
+    if (arg === '--difficulty') {
+      options.difficulty = true;
+      continue;
+    }
+
+    // Handle key-value pairs
+    const key = arg.replace('--', '');
     const value = args[i + 1];
 
     if (key === 'seed') options.seed = parseInt(value);
@@ -288,6 +299,16 @@ function parseArgs() {
     else if (key === 'objects') options.objects = parseInt(value);
     else if (key === 'selections') options.selections = parseInt(value);
     else if (key === 'output') options.output = value;
+
+    // Skip next arg if it was a value
+    if (value && !value.startsWith('--')) {
+      i++;
+    }
+  }
+
+  // Override trial count for difficulty check
+  if (options.difficulty) {
+    options.trials = 10;
   }
 
   return options;
@@ -296,7 +317,8 @@ function parseArgs() {
 function main() {
   const options = parseArgs();
 
-  console.log('Trial Generator');
+  const trialType = options.difficulty ? 'Difficulty Check' : 'Main';
+  console.log(`${trialType} Trial Generator`);
   console.log('===============');
   console.log(`Base seed: ${options.seed}`);
   console.log(`Trial sets: ${options.sets}`);
@@ -317,15 +339,18 @@ function main() {
       numSelections: options.selections,
     });
 
-    const filename = `trial_set_${setNum}.json`;
+    // Different filename for difficulty check trials
+    const filename = options.difficulty
+      ? `difficulty_check_set_${setNum}.json`
+      : `trial_set_${setNum}.json`;
     const filepath = path.join(options.output, filename);
 
     fs.writeFileSync(filepath, JSON.stringify(trialSet, null, 2));
-    console.log(`\n✓ Saved trial set ${setNum} to ${filename}`);
+    console.log(`\n✓ Saved ${trialType.toLowerCase()} trial set ${setNum} to ${filename}`);
     console.log(`  Total size: ${(fs.statSync(filepath).size / 1024).toFixed(2)} KB`);
   }
 
-  console.log('\n✓ Trial generation complete!');
+  console.log(`\n✓ ${trialType} trial generation complete!`);
 }
 
 main();

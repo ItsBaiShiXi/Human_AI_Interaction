@@ -70,10 +70,18 @@ function setupInstructionNavigation() {
     } else {
       instructionsContainer.style.display = "none";
       experimentContainer.style.display = "block";
-      globalState.isComprehensionCheck = true;
-      showEnterEducationTrials();
+
+      if (globalState.isDifficultyCheck) {
+        globalState.isComprehensionCheck = false;
+        globalState.isDifficultyCheck = true;
+        showEnterDifficultyCheck();
+      } else {
+        globalState.isComprehensionCheck = true;
+        showEnterEducationTrials();
+      }
+
       startGame();
-      // update user data before enter eduation trials
+      // update user data before enter trials
       import("./firebase/saveData2Firebase.js").then((module) => {
         module.saveOrUpdateUser(getCurrentDate());
       });
@@ -247,6 +255,17 @@ export function showEnterMainGame() {
   modalInfo.innerHTML = `<p>
             Congratulations! You have completed all the comprehension check trials. <br/>
             Now, proceed to the main game.
+          </p>`;
+  document.getElementById("modalOverlay").style.display = "flex";
+}
+
+export function showEnterDifficultyCheck() {
+  modalContainer.style.display = "block";
+  const modalInfo = document.getElementById("modalInfo");
+  modalInfo.innerHTML = `<p>
+            You will now play ${globalState.NUM_DIFFICULTY_CHECK_TRIALS} difficulty check trials. <br/>
+            There will be no AI assistance. <br/>
+            Please make your best effort to maximize your score.
           </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
 }
