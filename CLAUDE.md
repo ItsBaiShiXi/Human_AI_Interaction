@@ -33,6 +33,29 @@ npm run generate-trials -- --sets 3        # Generate 3 different trial sets
 npm run generate-trials -- --trials 50     # Generate 50 trials per set
 ```
 
+### Difficulty Check Trial Generation
+```bash
+# Split existing trial_set_1.json into 6 difficulty check sets (10 trials each)
+npm run split-difficulty-trials
+
+# Or generate new difficulty check trials directly (10 trials per set)
+npm run generate-difficulty-trials                    # Generate 1 set with default seed
+npm run generate-difficulty-trials -- --seed 54321    # Generate with custom seed
+npm run generate-difficulty-trials -- --sets 6        # Generate 6 different sets
+```
+
+**Difficulty Check URLs** (each set for different participant group):
+| Set | URL Parameters |
+|-----|----------------|
+| 1 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=1` |
+| 2 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=2` |
+| 3 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=3` |
+| 4 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=4` |
+| 5 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=5` |
+| 6 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=6` |
+
+Add `&DEBUG=true` to skip consent for testing.
+
 ## Architecture Overview
 
 ### Entry Point & Flow

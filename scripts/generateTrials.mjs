@@ -200,8 +200,8 @@ function generateTrial(trialNumber, seed, numObjects = 10, centerX = 405, center
     objects.push(obj);
   }
 
-  // Add bomb (50% chance, but forced to 100% for consistency)
-  const shouldHaveBomb = rng() < 1; // Always add bomb for now
+  // Add bomb (50% chance)
+  const shouldHaveBomb = rng() < 0.5;
 
   if (shouldHaveBomb) {
     let bombObject = generateRandomObject(rng, centerX, centerY, numObjects, 'red');

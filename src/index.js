@@ -67,7 +67,11 @@ if (urlParams.DIFFICULTY_CHECK !== undefined) {
   globalState.isDifficultyCheck = urlParams.DIFFICULTY_CHECK === 'true';
   if (globalState.isDifficultyCheck) {
     globalState.AI_HELP = 0; // Force disable AI assistance
-    console.log("Difficulty check mode enabled: AI assistance disabled");
+    // Allow NUM_TRIALS to override difficulty check trial count
+    if (urlParams.NUM_TRIALS !== undefined) {
+      globalState.NUM_DIFFICULTY_CHECK_TRIALS = Number(urlParams.NUM_TRIALS);
+    }
+    console.log(`Difficulty check mode enabled: AI disabled, ${globalState.NUM_DIFFICULTY_CHECK_TRIALS} trials`);
   }
 }
 
