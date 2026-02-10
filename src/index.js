@@ -34,7 +34,7 @@ import { showEnterEducationTrials, showMultipleAttempts } from "./instructions";
 import { redrawAll } from "./logic/drawing";
 import { initializeObjects, initializePlayer } from "./logic/initialize";
 import { checkIfUserExists } from "./firebase/saveData2Firebase.js";
-import { initializeTrialLoader } from "./data/trialLoader.js";
+import { initializeTrialLoader, getTrialSetMetadata } from "./data/trialLoader.js";
 
 if (window.location.hostname === "localhost") {
   const url = new URL(window.location.href);
@@ -175,6 +175,23 @@ async function startExperiment(skipConsent = false, skipEducation = false) {
       const loaded = await initializeTrialLoader();
       if (loaded) {
         console.log('✓ Pre-generated trials loaded successfully');
+
+        // Configure attention check for difficulty check mode
+        if (globalState.isDifficultyCheck) {
+          const setId = Number(urlParams.TRIAL_SET) || 1;
+          const metadata = getTrialSetMetadata(setId, true);
+          if (metadata && metadata.numTrials >= 6) {
+            globalState.ATTENTION_CHECK_TRIALS = { 6: false };
+            globalState.NUM_DIFFICULTY_CHECK_TRIALS = metadata.numTrials + 1;
+            console.log(`Difficulty check: attention check inserted at trial 6, total trials: ${globalState.NUM_DIFFICULTY_CHECK_TRIALS}`);
+          } else {
+            globalState.ATTENTION_CHECK_TRIALS = {};
+            if (metadata) {
+              globalState.NUM_DIFFICULTY_CHECK_TRIALS = metadata.numTrials;
+            }
+            console.log(`Difficulty check: no attention check (set has ${metadata?.numTrials ?? '?'} trials)`);
+          }
+        }
       } else {
         console.warn('⚠ Failed to load pre-generated trials, falling back to random generation');
         globalState.USE_STATIC_TRIALS = false;

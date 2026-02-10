@@ -64,15 +64,23 @@ export async function initializeObjectsFromTrialData(isComprehensionCheck, needR
   }
 
   // Load pre-generated trial from JSON or Firebase
+  // For difficulty check: offset trial number to account for inserted attention check
+  let trialToLoad = globalState.curTrial;
+  if (globalState.isDifficultyCheck) {
+    const attentionTrialPositions = Object.keys(globalState.ATTENTION_CHECK_TRIALS).map(Number);
+    const offset = attentionTrialPositions.filter(t => t < trialToLoad).length;
+    trialToLoad -= offset;
+  }
+
   try {
-    const trial = await loadTrial(globalState.curTrial, {
+    const trial = await loadTrial(trialToLoad, {
       isDifficultyCheck: globalState.isDifficultyCheck,
     });
     globalState.objects = trial.objects.map((obj) =>
       adjustObjectForRefreshRate(obj)
     );
     const trialType = globalState.isDifficultyCheck ? 'difficulty check' : 'main';
-    console.log(`Loaded ${trialType} trial ${globalState.curTrial} with ${globalState.objects.length} objects`);
+    console.log(`Loaded ${trialType} trial ${globalState.curTrial} (JSON trial ${trialToLoad}) with ${globalState.objects.length} objects`);
   } catch (error) {
     console.error(`Failed to load trial ${globalState.curTrial}, falling back to random generation:`, error);
     // Fall back to random generation if loading fails
@@ -153,7 +161,7 @@ function initializeObjectsRandomly() {
   // ====================================================================
 
   // ========== NEW: Add bomb as 11th ball (50% chance) ==========
-  const shouldHaveBomb = globalState.randomGenerator() < 1;  // 50% chance
+  const shouldHaveBomb = globalState.randomGenerator() < 0.5;  // 50% chance
 
   if (shouldHaveBomb) {
     let bombObject = generateRandomObject(false, 'red');

@@ -150,8 +150,11 @@ export function updateExperimentData(
     experiment.failed_attention_check_count = countFailedAttentionCheck();
   }
 
-  // Check if this is the last trial of the main experiment
-  const isLastTrial = curTrial.trial_id === globalState.NUM_MAIN_TRIALS;
+  // Check if this is the last trial of the experiment
+  const finalTrialCount = globalState.isDifficultyCheck
+    ? globalState.NUM_DIFFICULTY_CHECK_TRIALS
+    : globalState.NUM_MAIN_TRIALS;
+  const isLastTrial = curTrial.trial_id === finalTrialCount;
   if (isLastTrial) {
     experiment.is_finished = true;
 

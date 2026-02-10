@@ -34,7 +34,7 @@ export async function initializeTrialLoader() {
 
     console.log(`Loaded ${Object.keys(trialSets).length} main trial set(s)`);
 
-    // Import difficulty check trial sets (1-6)
+    // Import difficulty check trial sets (1-9)
     const difficultySetImports = [
       import('./trials/difficulty_check_set_1.json').catch(() => null),
       import('./trials/difficulty_check_set_2.json').catch(() => null),
@@ -42,6 +42,9 @@ export async function initializeTrialLoader() {
       import('./trials/difficulty_check_set_4.json').catch(() => null),
       import('./trials/difficulty_check_set_5.json').catch(() => null),
       import('./trials/difficulty_check_set_6.json').catch(() => null),
+      import('./trials/difficulty_check_set_7.json').catch(() => null),
+      import('./trials/difficulty_check_set_8.json').catch(() => null),
+      import('./trials/difficulty_check_set_9.json').catch(() => null),
     ];
 
     const diffResults = await Promise.all(difficultySetImports);

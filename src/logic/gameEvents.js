@@ -571,8 +571,7 @@ function handleMainMode() {
   // Show correct button
   updateButtonVisibility(globalState.curTrial === finalTrialCount);
 
-  // Skip attention checks for difficulty check mode
-  if (!globalState.isDifficultyCheck && isAttentionCheck()) {
+  if (isAttentionCheck()) {
     const passed = globalState.userSolution.totalValueProp * 100 === 100;
     if (!passed) {
       showFailedAttentionCheck();

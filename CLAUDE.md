@@ -53,8 +53,20 @@ npm run generate-difficulty-trials -- --sets 6        # Generate 6 different set
 | 4 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=4` |
 | 5 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=5` |
 | 6 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=6` |
+| 7 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=7` |
+| 8 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=8` |
+| 9 | `?DIFFICULTY_CHECK=true&USE_STATIC_TRIALS=true&TRIAL_SET=9` |
 
 Add `&DEBUG=true` to skip consent for testing.
+
+**Difficulty Check Attention Check:**
+- For sets with >= 6 trials (sets 1-8): an attention check trial is automatically inserted at trial 6
+- Uses `educate1_objects.json` (same easy trial as normal experiment attention checks)
+- Total trials become 11 (10 from JSON + 1 attention check)
+- Trials 7-11 map to JSON trials 6-10 (offset by 1)
+- Sets with < 6 trials (set 9): no attention check, trial count unchanged
+- Failing the attention check requires 100% score; failure is recorded in `failed_attention_check_count`
+- Configuration: `ATTENTION_CHECK_TRIALS` is overridden to `{ 6: false }` at runtime in `src/index.js`
 
 ## Architecture Overview
 
@@ -87,6 +99,8 @@ Objects are stored in `globalState.objects` array with properties:
 
 #### Ball Types
 
+> **Note**: Ball type logic is defined in `scripts/generateTrials.mjs` for pre-generated trials. Random generation logic will not be used during actual experiment.
+
 **Normal (Red) Ball**
 - Default ball type (~55% spawn rate)
 - Static value throughout trial
@@ -106,17 +120,20 @@ Objects are stored in `globalState.objects` array with properties:
 **Green Turner Ball**
 - Direction-changing ball (~30% spawn rate)
 - **Turn behavior**:
-  - 50% chance to turn mid-flight at ~3.5 seconds
+  - 50% chance to turn mid-flight at ~3.5 seconds (210 frames at 60Hz)
+  - Turn always occurs during interception phase (after 180-frame observation)
   - Always reverses direction (180° turn)
   - Turn disabled if ball would exit arena before turn time
 - **Interception handling**:
-  - Two-phase interception if turn occurs during pursuit
-  - Phase 1: Move toward pre-turn trajectory
-  - Phase 2: Adjust to post-turn trajectory
+  - If caught before turn: treated as normal straight-line ball
+  - If turn occurs during pursuit: two-phase interception
+    - Phase 1: Move toward pre-turn trajectory for `framesUntilTurn` frames
+    - Phase 2: Re-intercept with reversed trajectory from new player position
+- **Scoring**: Same static `obj.value` as red balls (no decay)
 - **State tracking**: `hasTurned`, `turnAfterFrames`, `turnStrategy`
 
 **Bomb Ball**
-- Trap object that freezes game on contact (~100% chance to spawn as 11th ball)
+- Trap object that freezes game on contact (~50% chance to spawn as 11th ball)
 - **Type**: `type: 'bomb'` (distinct from selectable ball types)
 - **Size**: Larger radius (50px vs normal 15px)
 - **Visual**: Displays trap image (trap_img.png) with circular black border
@@ -206,6 +223,7 @@ Controlled via URL parameters:
 - `NUM_SELECTIONS`: Objects to select (default: 2)
 - `NUM_OBJECTS`: Total objects per trial (default: 10)
 - `DEBUG`: Skip consent and education trials
+- `SKIP_TO_FEEDBACK`: Skip directly to feedback page (for testing)
 - `USE_STATIC_TRIALS`: Use pre-generated trials (true/false, default: false)
 - `TRIAL_SET`: Which trial set to use when using static trials (default: 1)
 
@@ -418,7 +436,7 @@ Each trial JSON contains:
 - 2 × Blue balls - Time-decaying value (1.5× initial boost)
 - 2 × Green turner balls - 50% chance to reverse direction at ~3.5s
 - 4 × Random balls - Randomly assigned from above types
-- 1 × Bomb (100% spawn rate) - Trap object with type 'bomb', freezes game on contact
+- 1 × Bomb (50% spawn rate) - Trap object with type 'bomb', freezes game on contact
 
 **Key Logic Details:**
 
