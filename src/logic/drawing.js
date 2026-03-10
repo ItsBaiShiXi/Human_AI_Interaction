@@ -177,14 +177,14 @@ export function drawObjects() {
 
       // Set text alignment and baseline for centering
       // Skip displaying debug text for bombs
-      if (globalState.isDebugMode && !object.isBomb) {
-        ctx.textAlign = "center"; // Aligns text horizontally to the center
-        ctx.textBaseline = "middle"; // Aligns text vertically to the center
-        ctx.fillStyle = "rgb(0, 0, 0)";
-        let fontSize = 20;
-        ctx.font = `${fontSize}px Arial`;
-        ctx.fillText(index, object.x, object.y);
-      }
+      // if (globalState.isDebugMode && !object.isBomb) {
+      //   ctx.textAlign = "center"; // Aligns text horizontally to the center
+      //   ctx.textBaseline = "middle"; // Aligns text vertically to the center
+      //   ctx.fillStyle = "rgb(0, 0, 0)";
+      //   let fontSize = 20;
+      //   ctx.font = `${fontSize}px Arial`;
+      //   ctx.fillText(index, object.x, object.y);
+      // }
 
       // Draw selection number if selected
       if (object.isSelected) {
