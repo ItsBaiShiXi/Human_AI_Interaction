@@ -1,0 +1,37 @@
+/* styles for instruction page5 - ball types */
+
+.page5-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 40px;
+}
+
+.page5-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+}
+
+.page5-ball-image {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.page5-trap-image {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.page5-label {
+  font-size: 25px;
+  line-height: 1.4;
+  margin: 0;
+  padding: 0;
+  display: inline;
+}

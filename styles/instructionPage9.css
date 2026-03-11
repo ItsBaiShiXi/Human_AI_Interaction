@@ -1,17 +1,17 @@
 /* styles for instruction page8 */
 
-.page8-container {
+.page9-container {
   display: block;
   position: relative;
 }
 
-.page8-left-image {
+.page9-left-image {
   width: 50%;
   height: auto;
   display: inline-block;
 }
 
-.page8-arrow-container-1 {
+.page9-arrow-container-1 {
   position: absolute;
   top: 10%;
   left: 55%;
@@ -19,7 +19,7 @@
   text-align: center;
 }
 
-.page8-long-arrow-1 {
+.page9-long-arrow-1 {
   width: 2px;
   height: 90px;
   background-color: black;
@@ -32,7 +32,7 @@
   transform-origin: top;
 }
 
-.page8-arrow-container-2 {
+.page9-arrow-container-2 {
   position: absolute;
   top: 40%;
   left: 55%;
@@ -40,7 +40,7 @@
   text-align: center;
 }
 
-.page8-long-arrow-2 {
+.page9-long-arrow-2 {
   width: 2px;
   height: 180px;
   background-color: black;
@@ -53,7 +53,7 @@
   transform-origin: top;
 }
 
-.page8-arrow-container-3 {
+.page9-arrow-container-3 {
   position: absolute;
   top: 60%;
   left: 55%;
@@ -61,7 +61,7 @@
   text-align: center;
 }
 
-.page8-long-arrow-3 {
+.page9-long-arrow-3 {
   width: 2px;
   height: 190px;
   background-color: black;
@@ -74,9 +74,9 @@
   transform-origin: top;
 }
 
-.page8-long-arrow-1::after,
-.page8-long-arrow-2::after,
-.page8-long-arrow-3::after {
+.page9-long-arrow-1::after,
+.page9-long-arrow-2::after,
+.page9-long-arrow-3::after {
   content: "";
   position: absolute;
   top: 100%;
