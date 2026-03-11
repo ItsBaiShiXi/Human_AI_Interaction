@@ -71,14 +71,8 @@ function setupInstructionNavigation() {
       instructionsContainer.style.display = "none";
       experimentContainer.style.display = "block";
 
-      if (globalState.isDifficultyCheck) {
-        globalState.isComprehensionCheck = false;
-        globalState.isDifficultyCheck = true;
-        showEnterDifficultyCheck();
-      } else {
-        globalState.isComprehensionCheck = true;
-        showEnterEducationTrials();
-      }
+      globalState.isComprehensionCheck = true;
+      showEnterEducationTrials();
 
       startGame();
       // update user data before enter trials

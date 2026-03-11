@@ -13,6 +13,7 @@ import {
 } from "../data/domElements.js";
 import {
   showEndGameFailedComprehensionCheck,
+  showEnterDifficultyCheck,
   showEnterMainGame,
   showEnterRetryTrials,
   showFailedAttentionCheck,
@@ -518,28 +519,16 @@ function displayTrialResults() {
 function handleComprehensionMode() {
   updateButtonVisibility(false);
 
-  // Difficulty check mode: no performance gating, always allow continuation
-  if (globalState.isDifficultyCheck) {
-    globalState.needRetry = false;
-    globalState.retryCnt = 0;
-
-    if (globalState.curTrial === globalState.NUM_DIFFICULTY_CHECK_TRIALS) {
-      // Completed all difficulty check trials
-      initializeExperimentData();
-      User.is_passed_education = true;
-      import("../firebase/saveData2Firebase.js").then((module) => {
-        module.saveOrUpdateUser(getCurrentDate());
-      });
-    }
-    return; // Skip performance check
-  }
-
   if (globalState.userSolution.totalValueProp * 100 === 100) {
     globalState.needRetry = false;
     globalState.retryCnt = 0;
 
     if (globalState.curTrial === globalState.NUM_EDUCATION_TRIALS) {
-      showEnterMainGame();
+      if (globalState.isDifficultyCheck) {
+        showEnterDifficultyCheck();
+      } else {
+        showEnterMainGame();
+      }
       initializeExperimentData();
 
       User.is_passed_education = true;
