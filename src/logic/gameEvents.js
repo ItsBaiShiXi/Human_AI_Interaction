@@ -237,7 +237,7 @@ function updateInfoPanel() {
     if (globalState.needRetry) {
       info += `<p>You have one remaining attempt to pass this comprehension check.</p>`;
     } else {
-      info += `<p>You have two attempts to pass this comprehension check trial.</p>`;
+      info += `<p>You have two attempts to pass this comprehension check problem.</p>`;
     }
   }
 

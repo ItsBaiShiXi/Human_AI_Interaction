@@ -27,7 +27,7 @@ export function showInstructions() {
 }
 
 let currentPage = 1;
-const totalPages = 9;
+const totalPages = 10;
 const unlockedPages = new Set();
 let timer = null;
 let countdownInterval = null;
@@ -171,7 +171,7 @@ export function showEnterEducationTrials() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-      Now, you will play ${globalState.NUM_EDUCATION_TRIALS} comprehension check trials. Please carefully read the
+      Now, you will play ${globalState.NUM_EDUCATION_TRIALS} comprehension check problems. Please carefully read the
       instructions and make your choices.
       </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
@@ -193,7 +193,7 @@ export function showEndGameFailedComprehensionCheck() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-             You did not pass this comprehension check trial after two attempts, 
+             You did not pass this comprehension check problem after two attempts, 
              so the study has ended, and <strong> no compensation will be provided. </strong> <br/>
              Please <strong> return </strong>  your submission by closing this study and clicking ‘Stop Without Completing’ on Prolific. 
             </p>`;
@@ -204,7 +204,7 @@ export function showEndGameFailedAllAttentionCheck() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-            Unfortunately, you did not pass the attention check trials, now the game is over 
+            Unfortunately, you did not pass the attention check problems, now the game is over 
             and you will be redirected back to Prolific.
             </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
@@ -247,7 +247,7 @@ export function showEnterMainGame() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-            Congratulations! You have completed all the comprehension check trials. <br/>
+            Congratulations! You have completed all the comprehension check problems. <br/>
             Now, proceed to the main game.
           </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
@@ -257,7 +257,7 @@ export function showEnterDifficultyCheck() {
   modalContainer.style.display = "block";
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
-            You will now play ${globalState.NUM_DIFFICULTY_CHECK_TRIALS} difficulty check trials. <br/>
+            You will now play ${globalState.NUM_DIFFICULTY_CHECK_TRIALS} difficulty check problems. <br/>
             There will be no AI assistance. <br/>
             Please make your best effort to maximize your score.
           </p>`;
