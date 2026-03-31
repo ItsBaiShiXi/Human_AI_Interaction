@@ -25,8 +25,7 @@ export function animateInterception() {
   updateObjectPositions(globalState.totalFrames);
   let status = updatePlayerPosition();
 
-  // Apply penalties for hazard collisions (gray balls) during interception
-  let hazardStatus = applyHazardPenalties(globalState.totalFrames);
+  applyStarCollection(globalState.totalFrames);
 
   redrawAll();
   globalState.totalFrames++;
@@ -37,8 +36,7 @@ export function animateInterception() {
         (globalState.player.y - globalState.centerY) ** 2
     ) <= GAME_RADIUS;
 
-  // Stop animation if bomb hit or player exits circle or sequence finished
-  if (isInCircle && status == "in progress" && hazardStatus !== "bomb_hit") {
+  if (isInCircle && status == "in progress") {
     globalState.animationFrameId = requestAnimationFrame(animateInterception);
   } else {
     finishInterception();
@@ -134,41 +132,22 @@ function updatePlayerPosition() {
   return status;
 }
 
-function applyHazardPenalties(frame) {
+function applyStarCollection(frame) {
+  if (globalState.starCollected) return;  // already collected this run
+
   const px = globalState.player.x;
   const py = globalState.player.y;
   const pr = globalState.player.radius || 15;
 
   for (const obj of globalState.objects) {
-    if (obj.isIntercepted) continue;
-    if (!obj.isBomb) continue;  // Only check for bombs (traps)
+    if (!obj.isStar) continue;
 
-    const dx = obj.x - px;
-    const dy = obj.y - py;
-    const dist = Math.hypot(dx, dy);
-    const or = obj.radius || 15;
+    const dist = Math.hypot(obj.x - px, obj.y - py);
+    const collisionThreshold = pr + obj.radius;
 
-    // Add a small buffer (10px) to collision threshold for better detection
-    const collisionThreshold = pr + or + 10;
-
-    // basic circle overlap with buffer
     if (dist <= collisionThreshold) {
-      // Check cooldown, if any (currently 0 cold down)
-      const cooldownOk = (frame - obj.penaltyLastAppliedAt) >= (obj.penaltyCooldownFrames || 0);
-      if (cooldownOk) {
-        // Add penalty
-        if (typeof globalState.penaltyPoints !== 'number') globalState.penaltyPoints = 0;
-        globalState.penaltyPoints += (obj.penaltyAmount || 0);
-        obj.penaltyLastAppliedAt = frame;
-
-        // Mark that bomb was hit this round
-        globalState.bombHit = true;
-
-        // RETURN STATUS TO STOP GAME
-        return "bomb_hit";
-      }
+      globalState.starCollected = true;
+      return;
     }
   }
-
-  return "continue";  // No bomb hit
 }

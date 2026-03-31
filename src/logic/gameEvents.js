@@ -263,9 +263,8 @@ function showReplayButton() {
 
 function loadBestSolutions(callback) {
   // ========== ADD THIS: Generate permutations for selectable balls only ==========
-  // Filter to get only selectable ball indices (excludes bomb)
   const selectableIndices = globalState.objects
-    .filter(obj => !obj.isBomb && obj.canBeSelected !== false)
+    .filter(obj => !obj.isStar && obj.canBeSelected !== false)
     .map(obj => obj.index);
   
   globalState.permutations = import("./computation/solutionEvaluator.js")
@@ -397,9 +396,7 @@ export function setBallColorByIndex(ballIndex, fill = "blue", stroke = fill) {
 */
 export function startInterception() {
   hideInterceptionControls();
-  // Reset per-run penalty counter
-  globalState.penaltyPoints = 0;
-  globalState.bombHit = false;
+  globalState.starCollected = false;
 
   computeUserSolution();
   resetInterceptionState();
@@ -501,9 +498,8 @@ function displayTrialResults() {
                      rankNow
                    )} best solution</p>`;
 
-  // Check if bomb was hit this round
-  if (globalState.bombHit) {
-    scoreText = `<p style="color: red; font-weight: bold;">You are trapped!</p>` + scoreText;
+  if (globalState.starCollected) {
+    scoreText = `<p style="color: gold; font-weight: bold;">Star collected! ×1.5 bonus!</p>` + scoreText;
   } else if (intercepted === globalState.NUM_SELECTIONS) {
     scoreText =
       `<p>Successfully intercept both selected objects</p>` + scoreText;

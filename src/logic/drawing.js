@@ -1,4 +1,4 @@
-import { ARROW_FACTOR, GAME_RADIUS, playerImage, trapImage } from "../data/constant.js";
+import { ARROW_FACTOR, GAME_RADIUS, playerImage, starImage } from "../data/constant.js";
 import { AI_HELP_TYPE, globalState } from "../data/variable.js";
 import { canvas, ctx } from "../data/domElements.js";
 import { isAttentionCheck } from "../utils/utils.js";
@@ -6,8 +6,8 @@ import { isAttentionCheck } from "../utils/utils.js";
 // Function to draw arrows indicating direction and speed
 function drawArrows() {
   globalState.objects.forEach((object) => {
-    // Skip drawing arrows for bombs
-    if (!object.isIntercepted && !object.isBomb) {
+    // Skip drawing arrows for stars
+    if (!object.isIntercepted && !object.isStar) {
       // Use current velocity if the animation step set it; fall back to initial
       const vx = object.currDX ?? object.dX;
       const vy = object.currDY ?? object.dY;
@@ -91,9 +91,46 @@ function drawPlayerArrow() {
   ctx.fill();
 }
 
+function drawStar(object) {
+  if (starImage.complete && starImage.naturalWidth !== 0) {
+    const imageSize = object.radius * 2;
+    const imageX = object.x - imageSize / 2;
+    const imageY = object.y - imageSize / 2;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
+    ctx.clip();
+    ctx.drawImage(starImage, imageX, imageY, imageSize, imageSize);
+    ctx.restore();
+
+    ctx.beginPath();
+    ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = '#FFA500';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+  } else {
+    ctx.beginPath();
+    ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFD700';
+    ctx.fill();
+    ctx.strokeStyle = '#FFA500';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+}
+
 // Function to draw all animated objects
 export function drawObjects() {
+  // Draw stars first so they appear behind all other balls
+  globalState.objects.forEach((object) => {
+    if (!object.isIntercepted && object.isStar) {
+      drawStar(object);
+    }
+  });
+
   globalState.objects.forEach((object, index) => {
+    if (object.isStar) return;  // already drawn above
     if (!object.isIntercepted) {
       // Highlight object if hovered
       if (index === globalState.hoverObjectIndex) {
@@ -103,47 +140,8 @@ export function drawObjects() {
         ctx.fill();
       }
 
-      // Check if this is a trap/bomb - draw image instead of circle
-      if (object.isBomb) {
-        // Draw trap image with circular black border
-        if (trapImage.complete && trapImage.naturalWidth !== 0) {
-          const imageSize = object.radius * 2; // Use diameter as image size
-          const imageX = object.x - imageSize / 2;
-          const imageY = object.y - imageSize / 2;
-
-          // Save context state
-          ctx.save();
-
-          // Create circular clipping path
-          ctx.beginPath();
-          ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
-          ctx.clip();
-
-          // Draw the trap image (will be clipped to circle)
-          ctx.drawImage(trapImage, imageX, imageY, imageSize, imageSize);
-
-          // Restore context to remove clipping
-          ctx.restore();
-
-          // Draw circular black border
-          const borderWidth = 4;
-          ctx.beginPath();
-          ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
-          ctx.strokeStyle = 'black';
-          ctx.lineWidth = borderWidth;
-          ctx.stroke();
-        } else {
-          // Fallback: draw circle if image not loaded
-          ctx.beginPath();
-          ctx.arc(object.x, object.y, object.radius, 0, Math.PI * 2);
-          ctx.fillStyle = '#FF0000';
-          ctx.fill();
-          ctx.strokeStyle = 'black';
-          ctx.lineWidth = 3;
-          ctx.stroke();
-        }
-      } else {
-        // Normal ball drawing (not a trap)
+      {
+        // Normal ball drawing
         // Calculate color with fade effect for blue balls
         let fillColor = object.colorFill || object.color || 'red';
         if (object.type === 'blue' && object.initialValue !== undefined && object.initialValue > 0) {

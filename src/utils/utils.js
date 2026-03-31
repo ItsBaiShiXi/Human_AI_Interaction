@@ -101,7 +101,7 @@ export function measureRefreshRate() {
         requestAnimationFrame(measureFrame);
       } else {
         const trimmed = frameTimestamps.slice(warmupFrames);
-        const filtered = trimmed.filter((t) => t > 5 && t < 100);
+        const filtered = trimmed.filter((t) => t > 2 && t < 100);
         const avgFrameDuration =
           filtered.reduce((sum, t) => sum + t, 0) / filtered.length;
         const refreshRate = Math.round(1000 / avgFrameDuration) || 60;

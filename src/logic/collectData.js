@@ -88,8 +88,8 @@ export function getCurrentExperimentData() {
  * @property {CustomCount} total_time_unfocused // milliseconds, time when window was not focused during entire trial
  * @property {boolean} is_attention_check
  * @property {boolean} is_comprehension_check
- * @property {boolean} user_hit_bomb // whether user hit the bomb (freeze trap)
- * @property {boolean} best_hit_bomb // whether best solution hits bomb
+ * @property {boolean} user_collected_star // whether user collected the star during interception
+ * @property {boolean} best_collected_star // whether the best solution collects the star
  */
 /**
  * Creates a new Trial object with default values
@@ -120,8 +120,8 @@ export function createNewTrialData(
     is_comprehension_check: is_comprehension_check,
     is_difficulty_check: globalState.isDifficultyCheck,
     is_attention_check: is_attention_check,
-    user_hit_bomb: false,
-    best_hit_bomb: false,
+    user_collected_star: false,
+    best_collected_star: false,
   };
 }
 
@@ -187,9 +187,8 @@ export function updateTrialData(
   trial.best_score = bestSolution.totalValue;
   trial.performance = userSolution.totalValueProp * 100;
 
-  // Track bomb hit status
-  trial.user_hit_bomb = userSolution.bombHit ?? false;
-  trial.best_hit_bomb = bestSolution.bombHit ?? false;
+  trial.user_collected_star = userSolution.starCollected ?? false;
+  trial.best_collected_star = bestSolution.starCollected ?? false;
 
   recordBestChoiceData(trial, bestSolution);
   addToCustomCount(trial.total_time, trialSec, isAfterAI); // trialSec is in milliseconds (total elapsed time)

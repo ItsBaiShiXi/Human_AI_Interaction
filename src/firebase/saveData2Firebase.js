@@ -186,8 +186,8 @@ async function saveTrialData(expRef, trial) {
       ai_choice: trial.ai_choice,
       best_choice: trial.best_choice,
       user_choice: trial.user_choice,
-      user_hit_bomb: trial.user_hit_bomb,
-      best_hit_bomb: trial.best_hit_bomb,
+      user_collected_star: trial.user_collected_star,
+      best_collected_star: trial.best_collected_star,
     });
   } catch (error) {
     console.error("❌ Failed to save trial data:", error);

@@ -116,13 +116,11 @@ export function enumerateAllSolutions() {
 
     let simFrame = 0;
     let totalValue = 0;
-    let penaltySum = 0;
-    let penaltyHitSum = 0;
     let moves = [];
     let objDetails = [];
     let isInProgress = true;
     let interceptedCnt = 0;
-    let bombHitDuringSequence = false;  // NEW: Track if bomb was hit
+    let starCollectedDuringSequence = false;
 
     for (let j = 0; j < globalState.NUM_SELECTIONS; j++) {
       const id = sequence[j];
@@ -162,64 +160,35 @@ export function enumerateAllSolutions() {
             timeToIntercept: Tseg,
             dX: vx1,
             dY: vy1,
-            penaltyPoints: phase1.penaltyPoints,
-            penaltyHits: phase1.penaltyHits,
             interceptPosX: copyPlayer.x,
             interceptPosY: copyPlayer.y,
             targetObjectId: id,
             isFinalForTarget: false,
-            bombHit: phase1.bombHit || false,
           });
 
-          // ========== Check for bomb hit in phase 1 ==========
-          if (phase1.bombHit) {
-            bombHitDuringSequence = true;
-            simFrame += phase1.stoppedAtFrame + 1;  // Freeze at bomb hit frame
-            isInProgress = false;
-            success = false;
-            finalDist = Infinity;
-            didSplit = true;
-            // Note: Scoring happens below at line ~269 for consistency
-            // Skip phase 2 since bomb already hit
-          } else {
-            // Normal case: update penalties and simFrame, then process phase 2
-            simFrame += Tseg;
-            penaltySum += (phase1.penaltyPoints || 0);
-            penaltyHitSum += (phase1.penaltyHits || 0);
+          if (phase1.starCollected) starCollectedDuringSequence = true;
+          simFrame += Tseg;
 
-            const turnedNow = getObjectStateAtFrame(objectNow, simFrame);
-            const [s2, t2, ix2, iy2, fd2] = attemptIntercept(
-              true,
-              copyPlayer.x, copyPlayer.y, copyPlayer.speed,
-              turnedNow.x, turnedNow.y,
-              turnedNow.vx, turnedNow.vy
-            );
+          const turnedNow = getObjectStateAtFrame(objectNow, simFrame);
+          const [s2, t2, ix2, iy2, fd2] = attemptIntercept(
+            true,
+            copyPlayer.x, copyPlayer.y, copyPlayer.speed,
+            turnedNow.x, turnedNow.y,
+            turnedNow.vx, turnedNow.vy
+          );
 
-            const m2 = processMove(s2, t2, copyPlayer, ix2, iy2, copyObjects, simFrame, id, true);
-            moves.push(m2);
+          const m2 = processMove(s2, t2, copyPlayer, ix2, iy2, copyObjects, simFrame, id, true);
+          moves.push(m2);
 
-            // ========== Check for bomb hit in phase 2 ==========
-            if (m2.bombHit) {
-              bombHitDuringSequence = true;
-              simFrame += m2.timeToIntercept;  // Freeze at bomb hit frame
-              isInProgress = false;
-              // Note: Scoring happens below at line ~269 for consistency
-            } else {
-              // Normal case: update penalties and simFrame
-              penaltySum += (m2.penaltyPoints || 0);
-              penaltyHitSum += (m2.penaltyHits || 0);
-              simFrame += Math.max(0, Math.round(t2));
-            }
-            // ====================================================
+          if (m2.starCollected) starCollectedDuringSequence = true;
+          simFrame += Math.max(0, Math.round(t2));
 
-            success = s2;
-            timeToIntercept = t2;
-            ix = ix2; iy = iy2;
-            finalDist = fd2;
+          success = s2;
+          timeToIntercept = t2;
+          ix = ix2; iy = iy2;
+          finalDist = fd2;
 
-            didSplit = true;
-          }
-          // ====================================================
+          didSplit = true;
         }
       }
 
@@ -228,22 +197,11 @@ export function enumerateAllSolutions() {
         const m = processMove(success, timeToIntercept, copyPlayer, ix, iy, copyObjects, simFrame, id, true);
         moves.push(m);
 
-        // ========== Check for bomb hit ==========
-        if (m.bombHit) {
-          bombHitDuringSequence = true;
-          simFrame += m.timeToIntercept;  // Freeze at bomb hit frame
-          isInProgress = false;
-          // Note: Scoring happens below at line ~282 for consistency
-        } else {
-          // Normal case: update penalties and simFrame
-          penaltySum += (m.penaltyPoints || 0);
-          penaltyHitSum += (m.penaltyHits || 0);
-          simFrame += Math.max(0, Math.round(timeToIntercept));
-        }
-        // =========================================
+        if (m.starCollected) starCollectedDuringSequence = true;
+        simFrame += Math.max(0, Math.round(timeToIntercept));
       }
 
-      // 4) Score this object (only if no bomb hit)
+      // 4) Score this object
 
       const valNow = computeObjectValue(objectNow, success, finalDist, j, interceptedCnt, simFrame);
       totalValue += valNow;
@@ -260,11 +218,8 @@ export function enumerateAllSolutions() {
       
     }
 
-    // ============================================================================
-
-    // 5) Apply penalty (bomb gives massive penalty, making this solution terrible)
-    // NO LONGER NEEDED AS PENALTY HANDLED DURING SIMULATION
-    // totalValue -= penaltySum;
+    // 5) Apply star multiplier if collected during this sequence
+    if (starCollectedDuringSequence) totalValue *= 1.5;
 
     allSolutions.push({
       sequence,
@@ -274,9 +229,7 @@ export function enumerateAllSolutions() {
       interceptedCnt,
       totalValueProp: 0,
       objDetails,
-      penaltyPoints: penaltySum,
-      penaltyHits: penaltyHitSum,
-      bombHit: bombHitDuringSequence,  // NEW: Track if this solution hits bomb
+      starCollected: starCollectedDuringSequence,
     });
   }
 
@@ -317,15 +270,7 @@ function processMove(
     player, objects, dX, dY, T, simFrameStart
   );
   
-  move.penaltyPoints = result.penaltyPoints;
-  move.penaltyHits = result.penaltyHits;
-  move.bombHit = result.bombHit || false;  // NEW
-  
-  // If bomb hit, update actual time moved
-  if (result.bombHit) {
-    move.timeToIntercept = result.stoppedAtFrame + 1;
-  }
-  // ======================================================
+  move.starCollected = result.starCollected || false;
 
   move.interceptPosX = player.x;
   move.interceptPosY = player.y;
@@ -452,13 +397,11 @@ function circlesOverlap(x1, y1, r1, x2, y2, r2) {
 }
 
 /**
- * Accumulates bomb penalties with per-bomb cooldown.
- * Returns { penaltyPoints, penaltyHits }.
+ * Steps the player through a constant-velocity phase, checking for star contact.
+ * Returns { starCollected }.
  */
 function stepPhaseConstant(player, objects, dX, dY, frames, simFrameStart) {
-  let penaltyPoints = 0;
-  let penaltyHits = 0;
-  const lastHitAt = new Map();
+  let starCollected = false;
 
   for (let t = 0; t < frames; t++) {
     player.x += dX;
@@ -467,42 +410,19 @@ function stepPhaseConstant(player, objects, dX, dY, frames, simFrameStart) {
     const F = simFrameStart + t + 1;
 
     for (const obj of objects) {
-      if (!obj.isBomb || obj.isIntercepted) continue;
+      if (!obj.isStar) continue;
 
       const { x, y } = getObjectStateAtFrame(obj, F);
-      
-      // ========== Use obj.radius (25 for bomb, 15 for normal) ==========
       const hit = ((player.x - x) ** 2 + (player.y - y) ** 2) <=
-        ((player.radius || 15) + (obj.radius)) ** 2;  // Use obj.radius, not hardcoded 15
-      // =================================================================
+        ((player.radius || 15) + obj.radius) ** 2;
 
       if (hit) {
-        const cooldown = obj.penaltyCooldownFrames || 0;
-        const last = lastHitAt.get(obj) ?? -Infinity;
-        if ((t - last) >= cooldown) {
-          penaltyPoints += (obj.penaltyAmount || 0);
-          penaltyHits += 1;
-          lastHitAt.set(obj, t);
-          
-          // ========== Stop immediately on bomb hit ==========
-          return { 
-            penaltyPoints, 
-            penaltyHits, 
-            stoppedAtFrame: t,
-            bombHit: true
-          };
-          // =================================================
-        }
+        starCollected = true;
       }
     }
   }
 
-  return { 
-    penaltyPoints, 
-    penaltyHits, 
-    stoppedAtFrame: frames,
-    bombHit: false
-  };
+  return { starCollected };
 }
 
 

@@ -28,10 +28,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -54,10 +51,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -80,10 +74,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -106,10 +97,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -132,10 +120,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -158,10 +143,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -184,10 +166,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -210,10 +189,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -236,10 +212,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -262,10 +235,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 10,
@@ -281,23 +251,21 @@
           "speed": 1.8888055095449092,
           "value": 0.5727655137883386,
           "initialValue": 0.5727655137883386,
-          "type": "bomb",
-          "colorFill": "#FF0000",
-          "colorStroke": "#000000",
+          "type": "star",
+          "colorFill": "#FFD700",
+          "colorStroke": "#FFA500",
           "turnAfterFrames": null,
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": true,
-          "penaltyAmount": 1,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null,
-          "canBeSelected": false
+          "isStar": true,
+          "canBeSelected": false,
+          "scoreMultiplier": 1.5
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": true,
+        "hasStar": true,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -330,10 +298,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -356,10 +321,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -382,10 +344,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -408,10 +367,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -434,10 +390,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -460,10 +413,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -486,10 +436,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -512,10 +459,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -538,10 +482,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -564,15 +505,12 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": false,
+        "hasStar": false,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -605,10 +543,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -631,10 +566,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -657,10 +589,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -683,10 +612,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -709,10 +635,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -735,10 +658,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -761,10 +681,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -787,10 +704,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -813,10 +727,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -839,15 +750,12 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": false,
+        "hasStar": false,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -880,10 +788,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -906,10 +811,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -932,10 +834,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -958,10 +857,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -984,10 +880,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -1010,10 +903,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -1036,10 +926,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -1062,10 +949,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -1088,10 +972,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -1114,10 +995,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 10,
@@ -1133,23 +1011,21 @@
           "speed": 1.1500169585924598,
           "value": 0.516122085394969,
           "initialValue": 0.516122085394969,
-          "type": "bomb",
-          "colorFill": "#FF0000",
-          "colorStroke": "#000000",
+          "type": "star",
+          "colorFill": "#FFD700",
+          "colorStroke": "#FFA500",
           "turnAfterFrames": null,
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": true,
-          "penaltyAmount": 1,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null,
-          "canBeSelected": false
+          "isStar": true,
+          "canBeSelected": false,
+          "scoreMultiplier": 1.5
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": true,
+        "hasStar": true,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -1182,10 +1058,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -1208,10 +1081,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -1234,10 +1104,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -1260,10 +1127,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -1286,10 +1150,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -1312,10 +1173,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -1338,10 +1196,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -1364,10 +1219,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -1390,10 +1242,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -1416,15 +1265,12 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": false,
+        "hasStar": false,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -1457,10 +1303,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -1483,10 +1326,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -1509,10 +1349,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -1535,10 +1372,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -1561,10 +1395,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -1587,10 +1418,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -1613,10 +1441,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -1639,10 +1464,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -1665,10 +1487,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -1691,10 +1510,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 10,
@@ -1710,23 +1526,21 @@
           "speed": 1.696516670519486,
           "value": 0.16084789513956663,
           "initialValue": 0.16084789513956663,
-          "type": "bomb",
-          "colorFill": "#FF0000",
-          "colorStroke": "#000000",
+          "type": "star",
+          "colorFill": "#FFD700",
+          "colorStroke": "#FFA500",
           "turnAfterFrames": null,
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": true,
-          "penaltyAmount": 1,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null,
-          "canBeSelected": false
+          "isStar": true,
+          "canBeSelected": false,
+          "scoreMultiplier": 1.5
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": true,
+        "hasStar": true,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -1759,10 +1573,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -1785,10 +1596,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -1811,10 +1619,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -1837,10 +1642,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -1863,10 +1665,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -1889,10 +1688,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -1915,10 +1711,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -1941,10 +1734,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -1967,10 +1757,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -1993,15 +1780,12 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": false,
+        "hasStar": false,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -2034,10 +1818,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -2060,10 +1841,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -2086,10 +1864,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -2112,10 +1887,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -2138,10 +1910,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -2164,10 +1933,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -2190,10 +1956,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -2216,10 +1979,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -2242,10 +2002,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -2268,15 +2025,12 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": false,
+        "hasStar": false,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -2309,10 +2063,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -2335,10 +2086,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -2361,10 +2109,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -2387,10 +2132,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -2413,10 +2155,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -2439,10 +2178,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -2465,10 +2201,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -2491,10 +2224,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -2517,10 +2247,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -2543,15 +2270,12 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": false,
+        "hasStar": false,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -2584,10 +2308,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 1,
@@ -2610,10 +2331,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 2,
@@ -2636,10 +2354,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 3,
@@ -2662,10 +2377,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 4,
@@ -2688,10 +2400,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 5,
@@ -2714,10 +2423,7 @@
           "turnStrategy": "reverse",
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 6,
@@ -2740,10 +2446,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 7,
@@ -2766,10 +2469,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 8,
@@ -2792,10 +2492,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 9,
@@ -2818,10 +2515,7 @@
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": false,
-          "penaltyAmount": 0,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null
+          "isStar": false
         },
         {
           "index": 10,
@@ -2837,23 +2531,21 @@
           "speed": 1.1461240700446067,
           "value": 0.314166433486717,
           "initialValue": 0.314166433486717,
-          "type": "bomb",
-          "colorFill": "#FF0000",
-          "colorStroke": "#000000",
+          "type": "star",
+          "colorFill": "#FFD700",
+          "colorStroke": "#FFA500",
           "turnAfterFrames": null,
           "turnStrategy": null,
           "turnAngle": null,
           "hasTurned": false,
-          "isBomb": true,
-          "penaltyAmount": 1,
-          "penaltyCooldownFrames": 0,
-          "penaltyLastAppliedAt": null,
-          "canBeSelected": false
+          "isStar": true,
+          "canBeSelected": false,
+          "scoreMultiplier": 1.5
         }
       ],
       "metadata": {
         "numObjects": 10,
-        "hasBomb": true,
+        "hasStar": true,
         "centerX": 405,
         "centerY": 405,
         "refreshRate": 60,
@@ -2863,7 +2555,7 @@
     }
   ],
   "metadata": {
-    "generatedAt": "2026-01-17T04:31:16.277Z",
+    "generatedAt": "2026-03-31T07:14:10.566Z",
     "numObjects": 10,
     "numSelections": 2,
     "version": "1.0.0",

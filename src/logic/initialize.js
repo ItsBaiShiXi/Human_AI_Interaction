@@ -160,31 +160,26 @@ function initializeObjectsRandomly() {
   }
   // ====================================================================
 
-  // ========== NEW: Add bomb as 11th ball (50% chance) ==========
-  const shouldHaveBomb = globalState.randomGenerator() < 0.5;  // 50% chance
+  // ========== Add star as 11th ball (50% chance) ==========
+  const shouldHaveStar = globalState.randomGenerator() < 0.5;  // 50% chance
 
-  if (shouldHaveBomb) {
-    let bombObject = generateRandomObject(false, 'red');
+  if (shouldHaveStar) {
+    let starObject = generateRandomObject(false, 'red');
 
-    // Convert to bomb with special properties
-    bombObject.type = 'bomb';
-    bombObject.isBomb = true;
-    bombObject.canBeSelected = false;
-    bombObject.penaltyAmount = 1.0;  // Instant game over (high penalty)
-    bombObject.penaltyCooldownFrames = 0;  // No cooldown needed
-    bombObject.penaltyLastAppliedAt = -Infinity;
+    starObject.type = 'star';
+    starObject.isStar = true;
+    starObject.canBeSelected = false;
+    starObject.scoreMultiplier = 1.5;  // Multiplies final score on contact
 
-    // Make it larger and visually distinct
-    bombObject.radius = 50;  // Larger than normal (15)
-    bombObject.colorFill = '#FF0000';  // Bright red center
-    bombObject.colorStroke = '#000000';  // Black outline
+    starObject.radius = 50;  // Larger than normal (15)
+    starObject.colorFill = '#FFD700';
+    starObject.colorStroke = '#FFA500';
 
-    // Assign special index to distinguish from selectable balls
-    bombObject.index = numObjects;  // Index 10 (if NUM_OBJECTS = 10)
+    starObject.index = numObjects;  // Index 10 (if NUM_OBJECTS = 10)
 
-    globalState.objects.push(bombObject);
+    globalState.objects.push(starObject);
   }
-  // ============================================================
+  // =========================================================
 }
 
 function adjustObjectForRefreshRate(obj) {
@@ -210,10 +205,8 @@ function adjustObjectForRefreshRate(obj) {
     turnStrategy: obj.turnStrategy ?? null,
     turnAngle: obj.turnAngle ?? null,
 
-    isBomb: obj.isBomb ?? false,
-    penaltyAmount: obj.penaltyAmount ?? 0,
-    penaltyCooldownFrames: obj.penaltyCooldownFrames ?? 0,
-    penaltyLastAppliedAt: obj.penaltyLastAppliedAt ?? -Infinity,
+    isStar: obj.isStar ?? false,
+    scoreMultiplier: obj.scoreMultiplier ?? 1,
 
     colorFill: obj.colorFill ?? 'red',
     colorStroke: obj.colorStroke ?? 'red',
@@ -342,11 +335,7 @@ function generateRandomObject(isEasyMode, type = null) {
     turnStrategy,         // always 'reverse' for 180° turns
     turnAngle,            // not used (kept for compatibility)
 
-    // Bomb-specific properties (set defaults for normal balls)
     isBomb: false,
-    penaltyAmount: 0,
-    penaltyCooldownFrames: 0,
-    penaltyLastAppliedAt: -Infinity,
 
     // NEW: colors
     colorFill,

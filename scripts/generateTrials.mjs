@@ -169,10 +169,7 @@ function generateRandomObject(rng, centerX, centerY, objectIndex, ballType = nul
     turnStrategy,
     turnAngle: null,
     hasTurned: false,
-    isBomb: false,
-    penaltyAmount: 0,
-    penaltyCooldownFrames: 0,
-    penaltyLastAppliedAt: -Infinity,
+    isStar: false,
   };
 }
 
@@ -200,24 +197,21 @@ function generateTrial(trialNumber, seed, numObjects = 10, centerX = 405, center
     objects.push(obj);
   }
 
-  // Add bomb (50% chance)
-  const shouldHaveBomb = rng() < 0.5;
+  // Add star (50% chance)
+  const shouldHaveStar = rng() < 0.5;
 
-  if (shouldHaveBomb) {
-    let bombObject = generateRandomObject(rng, centerX, centerY, numObjects, 'red');
+  if (shouldHaveStar) {
+    let starObject = generateRandomObject(rng, centerX, centerY, numObjects, 'red');
 
-    // Bomb properties - set type to 'bomb' for semantic clarity
-    bombObject.type = 'bomb';
-    bombObject.isBomb = true;
-    bombObject.canBeSelected = false;
-    bombObject.penaltyAmount = 1.0;
-    bombObject.penaltyCooldownFrames = 0;
-    bombObject.penaltyLastAppliedAt = -Infinity;
-    bombObject.radius = 50;
-    bombObject.colorFill = '#FF0000';
-    bombObject.colorStroke = '#000000';
+    starObject.type = 'star';
+    starObject.isStar = true;
+    starObject.canBeSelected = false;
+    starObject.scoreMultiplier = 1.5;
+    starObject.radius = 50;
+    starObject.colorFill = '#FFD700';
+    starObject.colorStroke = '#FFA500';
 
-    objects.push(bombObject);
+    objects.push(starObject);
   }
 
   return {
@@ -226,7 +220,7 @@ function generateTrial(trialNumber, seed, numObjects = 10, centerX = 405, center
     objects,
     metadata: {
       numObjects,
-      hasBomb: shouldHaveBomb,
+      hasStar: shouldHaveStar,
       centerX,
       centerY,
       refreshRate: REFRESH_RATE,

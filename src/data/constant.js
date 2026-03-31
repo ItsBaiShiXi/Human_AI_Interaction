@@ -11,12 +11,12 @@ export const randSeed = 12345; // Seed for random number generator
 export const playerImage = new Image();
 playerImage.src = new URL("../../assets/player.png", import.meta.url).href;
 
-export const trapImage = new Image();
-trapImage.src = new URL("../../assets/trap_img.png", import.meta.url).href;
+export const starImage = new Image();
+starImage.src = new URL("../../assets/star_img.png", import.meta.url).href;
 
 export const BALL_TYPES = {
   NORMAL: 'red',
   BLUE: 'blue',
   GREEN_TURNER: 'green_turner',
-  BOMB: 'bomb',
+  STAR: 'star',
 };
