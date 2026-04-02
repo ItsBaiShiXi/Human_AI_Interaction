@@ -72,6 +72,7 @@ export function getCurrentExperimentData() {
 /**
  * @typedef {Object} Trial
  * @property {number} trial_id
+ * @property {number|null} source_trial_number - trialNumber from the JSON file; null for random/education trials
  * @property {Date} create_time
  * @property {Date} end_time
  * @property {number} performance  // (user score / best score) * 100
@@ -117,6 +118,7 @@ export function createNewTrialData(
     think_time_unfocused: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (unfocused time only)
     total_time: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (total elapsed time)
     total_time_unfocused: { before_ai_show: 0, after_ai_show: 0, total: 0 }, // CustomCount (unfocused time only)
+    source_trial_number: globalState.sourceTrialNumber,
     is_comprehension_check: is_comprehension_check,
     is_difficulty_check: globalState.isDifficultyCheck,
     is_attention_check: is_attention_check,

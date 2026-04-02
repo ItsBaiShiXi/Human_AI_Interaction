@@ -92,10 +92,10 @@ Add `&DEBUG=true` to skip consent for testing.
 Objects are stored in `globalState.objects` array with properties:
 - `initX0, initY0`: Initial position
 - `initDX, initDY`: Initial velocity (pixels per frame)
-- `type`: Object type from `BALL_TYPES` (red, blue, green_turner, bomb)
+- `type`: Object type from `BALL_TYPES` (red, blue, green_turner, star)
 - `value`: Score value of the object (sampled from Beta distribution)
 - `initialValue`: Original value (for blue balls to track decay)
-- `isBomb`: Boolean flag identifying bomb objects (used for collision detection)
+- `isStar`: Boolean flag identifying star objects (used for collection detection)
 
 #### Ball Types
 
@@ -132,18 +132,20 @@ Objects are stored in `globalState.objects` array with properties:
 - **Scoring**: Same static `obj.value` as red balls (no decay)
 - **State tracking**: `hasTurned`, `turnAfterFrames`, `turnStrategy`
 
-**Bomb Ball**
-- Trap object that freezes game on contact (~50% chance to spawn as 11th ball)
-- **Type**: `type: 'bomb'` (distinct from selectable ball types)
+**Star Ball**
+- Bonus object that multiplies final score on contact (~50% chance to spawn as 11th ball)
+- **Type**: `type: 'star'` (distinct from selectable ball types)
 - **Size**: Larger radius (50px vs normal 15px)
-- **Visual**: Displays trap image (trap_img.png) with circular black border
-- **Collision**: Game freezes immediately when player touches it
-- **Scoring**: All remaining targets scored from frozen position (proximity-based)
+- **Visual**: Displays star image (star_img.png), gold fill (#FFD700), orange border (#FFA500)
+- **Placement**: Spawns near center (30–40% of GAME_RADIUS, i.e. 120–160px), slower speed (40–70 px/s vs 60–120)
+- **Collision**: Touching star sets `starCollected = true`, star disappears (`isIntercepted = true`), game continues normally
+- **Scoring**: If star collected during interception, total raw score is multiplied ×1.5 after the sequence completes
+- **AI awareness**: Solution evaluator simulates star collection and applies ×1.5 to `totalValue`, so AI ranks star-collecting sequences higher
 - **Properties**:
-  - `isBomb: true` (used for all runtime identification)
-  - `penaltyAmount: 1.0` (not subtracted from score, just indicates bomb)
+  - `isStar: true` (used for all runtime identification)
+  - `scoreMultiplier: 1.5`
   - `canBeSelected: false`
-- **Animation freeze**: `animateInterception()` stops when `applyHazardPenalties()` returns `"bomb_hit"`
+  - `value: 0` / `initialValue: 0` (star has no intrinsic point value)
 
 ### Solution Evaluation
 - **Permutations**: All possible selection sequences generated in `src/logic/computation/solutionEvaluator.js`
@@ -159,7 +161,7 @@ Scoring is handled by `computeObjectValue()` in `src/logic/computation/solutionE
 ```
 score = currentValue
 ```
-- For normal/green/bomb balls: `currentValue = object.value` (static)
+- For normal/green balls: `currentValue = object.value` (static)
 - For blue balls: `currentValue = getBlueBallValue(object, frame, ...)` (time-adjusted)
 
 #### Failed Interception (Proximity Scoring)
@@ -180,25 +182,19 @@ score = proximityRatio * currentValue * weight
 - **Ball 2 (value=0.8), missed at 50% distance (after Ball 1 failed)**: Score = 0.5 × 0.8 × 0.25 = 0.1
 - **Blue ball (initial=1.0, decayed to 0.6), caught**: Score = 0.6
 
-#### Bomb Hit Behavior
-When player touches a bomb during interception:
-1. **Game freezes** at exact collision frame
-2. **Current target** scored based on interception status at freeze
-3. **Remaining targets** scored using proximity from frozen position
-4. **Animation stops** immediately (`animation.js:41` checks `hazardStatus !== "bomb_hit"`)
-5. **Solution evaluator** continues loop after setting `isInProgress = false`
-
-**Example sequence [Ball A, Ball B] with bomb hit:**
-- Player intercepts Ball A successfully → Score = Ball A value
-- Player touches bomb while moving toward Ball B → Game freezes
-- Ball B scored based on distance from frozen position → Score = proximityRatio × Ball B value × 0.25
-- Total = Ball A score + Ball B proximity score
+#### Star Collection Behavior
+When player touches the star during interception:
+1. **Star disappears** immediately (`obj.isIntercepted = true`)
+2. **`globalState.starCollected`** set to `true` for the rest of the trial
+3. **Game continues** normally — no freeze, no interruption
+4. **After sequence completes**: if `starCollected`, `totalValue *= 1.5` is applied in solution evaluator
+5. **UI feedback**: "Star collected! Score bonus!" shown in gold on trial results panel
 
 #### Key Implementation Details
-- **No penalty deduction**: Bomb contact doesn't subtract points, only freezes game
-- **All targets scored**: Even after first failure or bomb hit, all selected targets contribute to score
-- **Frame-accurate**: Blue ball decay calculated at exact interception/freeze frame
+- **All targets scored**: Even after first failure, all selected targets contribute to score
+- **Frame-accurate**: Blue ball decay calculated at exact interception frame
 - **Consistent calculation**: Both animation and AI solver use `getBlueBallValue()` from `src/utils/blueballDecay.js`
+- **Star multiplier in AI**: `enumerateAllSolutions` applies ×1.5 to `totalValue` so the AI prefers sequences that collect the star
 
 ### Firebase Integration
 - **Authentication**: Anonymous auth on page load
@@ -208,11 +204,19 @@ When player touches a bomb during interception:
   - Trial data saved when clicking "Start Next Sequence"
   - Feedback saved at completion
 - **Trial Fields Saved**:
+  - Identity: `trial_id` (presentation order, 1-indexed), `source_trial_number` (problem identity, see below)
   - Time metrics: `think_time`, `think_time_unfocused`, `total_time`, `total_time_unfocused`
   - Interaction metrics: `replay_num`, `reselect_num`
   - Choice data: `user_choice`, `best_choice`, `ai_choice`
   - Performance: `user_score`, `best_score`, `performance`
-  - Bomb tracking: `user_hit_bomb`, `best_hit_bomb`
+  - Star tracking: `user_collected_star`, `best_collected_star`
+
+#### Trial Identity Fields
+- `trial_id`: Presentation order (1, 2, 3...). Always sequential regardless of shuffling. Use this to analyze learning curves or fatigue over time.
+- `source_trial_number`: The problem's identity from the source JSON file. Use this to compare performance on the same problem across participants.
+  - **Difficulty check trials**: Set from `originalTrialNumber` in the difficulty check JSON — the original trial number from `trial_set_1.json` that the difficulty check set was split from.
+  - **Main trials**: Currently `null` — to be implemented when main trial shuffling is added.
+  - **Education/attention/random trials**: Always `null` (no source JSON trial).
 - **Module**: `src/firebase/saveData2Firebase.js`
 
 ### Experimental Conditions
@@ -358,7 +362,7 @@ Each trial JSON contains:
 - `trialNumber`: Trial index (1-82)
 - `seed`: Seed used to generate this trial
 - `objects[]`: Array of object definitions with positions, velocities, types, values
-- `metadata`: Trial configuration (numObjects, hasBomb, etc.)
+- `metadata`: Trial configuration (numObjects, hasStar, etc.)
 
 #### Trial JSON Structure and Logic
 
@@ -383,10 +387,10 @@ Each trial JSON contains:
 {
   "trialNumber": 1,              // Trial index (1-indexed)
   "seed": 13345,                 // Unique seed for this trial
-  "objects": [                   // Array of 10-11 objects (10 selectable + optional bomb)
+  "objects": [                   // Array of 10-11 objects (10 selectable + optional star)
     {
       // Position & Kinematics (all relative to 60Hz refresh rate)
-      "index": 0,                      // Object index (0-9 for selectable, 10 for bomb)
+      "index": 0,                      // Object index (0-9 for selectable, 10 for star)
       "x0": 529.15,                    // Initial X position (pixels)
       "y0": 168.88,                    // Initial Y position (pixels)
       "initX0": 529.15,                // Immutable initial X (for stateless calculation)
@@ -396,14 +400,14 @@ Each trial JSON contains:
       "initDX": 0.199,                 // Immutable initial dX (for stateless calculation)
       "initDY": 1.754,                 // Immutable initial dY (for stateless calculation)
       "speed": 1.765,                  // Total speed (pixels/frame)
-      "radius": 15,                    // Object radius (pixels, 50 for bombs)
+      "radius": 15,                    // Object radius (pixels, 50 for star)
 
       // Value & Scoring
-      "value": 0.0786,                 // Object value (0-1, from Beta distribution)
-      "initialValue": 0.0786,          // Initial value (preserved for blue ball decay)
+      "value": 0.0786,                 // Object value (0-1, from Beta distribution); 0 for star
+      "initialValue": 0.0786,          // Initial value (preserved for blue ball decay); 0 for star
 
       // Ball Type & Behavior
-      "type": "red",                   // Ball type: 'red', 'blue', 'green_turner', 'bomb'
+      "type": "red",                   // Ball type: 'red', 'blue', 'green_turner', 'star'
       "colorFill": "red",              // Fill color
       "colorStroke": "red",            // Stroke color
 
@@ -413,16 +417,15 @@ Each trial JSON contains:
       "turnAngle": null,               // Reserved for future (currently unused)
       "hasTurned": false,              // Runtime flag tracking turn state
 
-      // Bomb Properties
-      "isBomb": false,                 // True for bomb objects (used for collision detection)
-      "penaltyAmount": 0,              // Penalty value (1.0 for bombs)
-      "penaltyCooldownFrames": 0,      // Immunity duration after hit
-      "penaltyLastAppliedAt": null     // Runtime tracking of last penalty
+      // Star Properties
+      "isStar": false,                 // True for star object (used for collection detection)
+      "scoreMultiplier": 1,            // 1.5 for star (multiplies total score on collection)
+      "canBeSelected": true            // false for star (UI prevents selection)
     }
   ],
   "metadata": {
     "numObjects": 10,            // Number of selectable objects
-    "hasBomb": true,             // Whether this trial includes a bomb
+    "hasStar": true,             // Whether this trial includes a star
     "centerX": 405,              // Arena center X (canvas 810x810)
     "centerY": 405,              // Arena center Y
     "refreshRate": 60,           // Target refresh rate (Hz)
@@ -436,7 +439,7 @@ Each trial JSON contains:
 - 2 × Blue balls - Time-decaying value (1.5× initial boost)
 - 2 × Green turner balls - 50% chance to reverse direction at ~3.5s
 - 4 × Random balls - Randomly assigned from above types
-- 1 × Bomb (50% spawn rate) - Trap object with type 'bomb', freezes game on contact
+- 1 × Star (50% spawn rate) - Bonus object with type 'star', multiplies final score ×1.5 on contact
 
 **Key Logic Details:**
 
@@ -461,11 +464,12 @@ Each trial JSON contains:
    - Observation phase (0-3s): Full value maintained
    - Interception phase (3-9s): Linear decay to 0 over 6 seconds
 
-5. **Bomb Properties:**
+5. **Star Properties:**
    - `index: 10` (11th object, non-selectable)
    - `radius: 50` (larger than normal 15px)
    - `canBeSelected: false` (UI prevents selection)
-   - Contact freezes game; remaining targets scored from frozen position
+   - Spawns near center (120–160px), slower speed (40–70 px/s)
+   - Contact multiplies final score ×1.5; star disappears, game continues
 
 **Module Reference:**
 - **Generator**: `scripts/generateTrials.mjs` - Pre-generates trial sets
@@ -502,8 +506,8 @@ Defined in `src/data/constant.js`:
 - Solutions are pre-computed for all permutations and ranked by total value
 - Player movement is deterministic based on computed interception paths
 - **Blue ball decay**: Shared utility (`src/utils/blueballDecay.js`) ensures animation and AI use identical decay logic
-- **Bomb detection**: Single `isBomb` flag used for all runtime bomb identification; `type: 'bomb'` provides semantic clarity
-- **Bomb freeze**: Game state freezes on bomb contact; remaining targets scored from frozen position
+- **Star detection**: Single `isStar` flag used for all runtime star identification; `type: 'star'` provides semantic clarity
+- **Star collection**: Touching star multiplies final score ×1.5 and removes the star; game does not freeze
 - **Proximity scoring**: Failed interceptions still contribute partial score based on final distance
 - **Green turner splits**: Two-phase interception handling when turn occurs during pursuit
 - **Frame synchronization**: All calculations (decay, scoring, collision) use frame-accurate timing

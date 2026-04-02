@@ -61,6 +61,13 @@ export async function startTrial() {
 
   prepareUIForTrial();
   await initializeGameState();
+
+  // Backfill source_trial_number now that the trial data has been loaded
+  const currentTrial = getCurrentTrialData(globalState.isComprehensionCheck);
+  if (currentTrial) {
+    currentTrial.source_trial_number = globalState.sourceTrialNumber;
+  }
+
   startTrialAnimation();
 }
 
@@ -499,7 +506,7 @@ function displayTrialResults() {
                    )} best solution</p>`;
 
   if (globalState.starCollected) {
-    scoreText = `<p style="color: gold; font-weight: bold;">Star collected! ×1.5 bonus!</p>` + scoreText;
+    scoreText = `<p style="color: gold; font-weight: bold;">Star collected! Score bonus!</p>` + scoreText;
   } else if (intercepted === globalState.NUM_SELECTIONS) {
     scoreText =
       `<p>Successfully intercept both selected objects</p>` + scoreText;

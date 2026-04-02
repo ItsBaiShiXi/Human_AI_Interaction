@@ -23,11 +23,13 @@ export const globalState = {
   AI_HELP: 0,
   isComprehensionCheck: false,
   isDifficultyCheck: false,
+  difficultyCheckSetId: null,
   needRetry: false,
   retryCnt: 0,
 
   curExperiment: 0,
   curTrial: 0,
+  sourceTrialNumber: null, // trialNumber from the JSON file; null for random/education trials
 
   isDebugMode: false,
 

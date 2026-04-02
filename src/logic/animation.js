@@ -147,6 +147,7 @@ function applyStarCollection(frame) {
 
     if (dist <= collisionThreshold) {
       globalState.starCollected = true;
+      obj.isIntercepted = true;  // hides star from drawing
       return;
     }
   }

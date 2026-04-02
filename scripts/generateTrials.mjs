@@ -79,6 +79,69 @@ function pickBallType(rng) {
 
 // ========== TRIAL GENERATION ==========
 
+/**
+ * Generates a star object near the center of the arena with reduced speed.
+ * Placement: 30–40% of GAME_RADIUS from center (120–160px).
+ * Speed: 40–70 px/s (lower than normal 60–120).
+ * Validity: only checks that the star stays inside the arena after observation.
+ */
+function generateStarObject(rng, centerX, centerY, index) {
+  let x0, y0, dx, dy, speed;
+  let isValid = false;
+
+  const STAR_SPEED_MIN = 40;
+  const STAR_SPEED_MAX = 70;
+  const STAR_RADIUS_MIN = GAME_RADIUS * 0.30; // 120px from center
+  const STAR_RADIUS_MAX = GAME_RADIUS * 0.40; // 160px from center
+
+  do {
+    const randomDirection = rng() * Math.PI * 2;
+    const randomSpeed = rng() * (STAR_SPEED_MAX - STAR_SPEED_MIN) + STAR_SPEED_MIN;
+    const randomRadius = rng() * (STAR_RADIUS_MAX - STAR_RADIUS_MIN) + STAR_RADIUS_MIN;
+    const randomStartAngle = rng() * Math.PI * 2;
+
+    const perFrame = randomSpeed / REFRESH_RATE;
+
+    x0 = centerX + Math.cos(randomStartAngle) * randomRadius;
+    y0 = centerY + Math.sin(randomStartAngle) * randomRadius;
+
+    dx = perFrame * Math.cos(randomDirection);
+    dy = perFrame * Math.sin(randomDirection);
+
+    speed = Math.hypot(dx, dy);
+
+    const finalx = x0 + dx * OBSERVATION_FRAMES;
+    const finaly = y0 + dy * OBSERVATION_FRAMES;
+    const finalRadius = Math.sqrt(
+      (finalx - centerX) ** 2 + (finaly - centerY) ** 2
+    );
+
+    isValid = finalRadius < GAME_RADIUS - 50;
+  } while (!isValid);
+
+  return {
+    index,
+    x0, y0,
+    initX0: x0, initY0: y0,
+    dX: dx, dY: dy,
+    initDX: dx, initDY: dy,
+    radius: 50,
+    speed,
+    value: 0,
+    initialValue: 0,
+    type: 'star',
+    colorFill: '#FFD700',
+    colorStroke: '#FFA500',
+    turnAfterFrames: null,
+    turnStrategy: null,
+    turnAngle: null,
+    hasTurned: false,
+    isStar: true,
+    canBeSelected: false,
+    scoreMultiplier: 1.5,
+  };
+}
+
 function generateRandomObject(rng, centerX, centerY, objectIndex, ballType = null) {
   let x0, y0, dx, dy, speed;
   let isValid = false;
@@ -201,16 +264,7 @@ function generateTrial(trialNumber, seed, numObjects = 10, centerX = 405, center
   const shouldHaveStar = rng() < 0.5;
 
   if (shouldHaveStar) {
-    let starObject = generateRandomObject(rng, centerX, centerY, numObjects, 'red');
-
-    starObject.type = 'star';
-    starObject.isStar = true;
-    starObject.canBeSelected = false;
-    starObject.scoreMultiplier = 1.5;
-    starObject.radius = 50;
-    starObject.colorFill = '#FFD700';
-    starObject.colorStroke = '#FFA500';
-
+    const starObject = generateStarObject(rng, centerX, centerY, numObjects);
     objects.push(starObject);
   }
 

@@ -49,6 +49,10 @@ onAuthStateChanged(auth, (user) => {
  * Main function: Save single trial or just update end_times
  */
 export async function saveSingleTrial(experiment, trial) {
+  if (globalState.isDifficultyCheck) {
+    return saveDifficultyCheckTrialData(experiment, trial);
+  }
+
   try {
     const endTime = trial?.end_time || getCurrentDate();
     const userDocRef = await saveOrUpdateUser(endTime);
@@ -79,9 +83,87 @@ export async function saveSingleTrial(experiment, trial) {
 }
 
 /**
+ * Save a difficulty check trial to difficulty_check_sets/{setId}/users/{pid}/trials/{trialId}
+ */
+async function saveDifficultyCheckTrialData(experiment, trial) {
+  const setId = globalState.difficultyCheckSetId;
+  if (!setId) {
+    console.error("❌ saveDifficultyCheckTrialData: difficultyCheckSetId is null.");
+    return;
+  }
+  try {
+    const endTime = trial?.end_time || getCurrentDate();
+    const userDocRef = doc(db, "difficulty_check_sets", `${setId}`, "users", User.prolific_pid);
+
+    // Keep user doc up to date with latest experiment status
+    await setDoc(userDocRef, {
+      end_time: endTime,
+      failed_attention_check_count: experiment?.failed_attention_check_count ?? 0,
+      is_finished: experiment?.is_finished ?? false,
+    }, { merge: true });
+
+    if (!trial) return;
+
+    const trialRef = doc(collection(userDocRef, "trials"), `${trial.trial_id}`);
+    await setDoc(trialRef, {
+      trial_id: trial.trial_id,
+      source_trial_number: trial.source_trial_number ?? null,
+      is_attention_check: trial.is_attention_check,
+      is_comprehension_check: trial.is_comprehension_check,
+      is_difficulty_check: true,
+      create_time: trial.create_time,
+      end_time: trial.end_time,
+      performance: trial.performance,
+      user_score: trial.user_score,
+      best_score: trial.best_score,
+      replay_num: trial.replay_num,
+      reselect_num: trial.reselect_num,
+      think_time: trial.think_time,
+      think_time_unfocused: trial.think_time_unfocused,
+      total_time: trial.total_time,
+      total_time_unfocused: trial.total_time_unfocused,
+      ai_choice: trial.ai_choice,
+      best_choice: trial.best_choice,
+      user_choice: trial.user_choice,
+      user_collected_star: trial.user_collected_star,
+      best_collected_star: trial.best_collected_star,
+    });
+    console.log(`✅ Difficulty check trial ${trial.trial_id} saved for user ${User.prolific_pid} in set ${setId}.`);
+  } catch (error) {
+    console.error("❌ Failed to save difficulty check trial:", error);
+  }
+}
+
+/**
  *  Save or update the user document
  */
 export async function saveOrUpdateUser(endTime) {
+  if (globalState.isDifficultyCheck) {
+    const setId = globalState.difficultyCheckSetId;
+    if (!setId) {
+      console.error("❌ saveOrUpdateUser: difficultyCheckSetId is null.");
+      return;
+    }
+    try {
+      const userDocRef = doc(db, "difficulty_check_sets", `${setId}`, "users", User.prolific_pid);
+      await setDoc(userDocRef, {
+        prolific_pid: User.prolific_pid,
+        firebase_uid: firebaseUserId,
+        difficulty_check_set_id: setId,
+        create_time: User.create_time,
+        end_time: endTime,
+        is_consent: User.is_consent,
+        is_passed_education: User.is_passed_education,
+        is_passed_all_experiments: User.is_passed_all_experiments,
+      }, { merge: true });
+      console.log(`✅ Difficulty check user ${User.prolific_pid} saved to set ${setId}.`);
+      return userDocRef;
+    } catch (error) {
+      console.error("❌ Failed to save difficulty check user:", error);
+    }
+    return;
+  }
+
   try {
     const userDocRef = doc(db, "users", User.prolific_pid);
 
@@ -107,7 +189,17 @@ export async function saveOrUpdateUser(endTime) {
  *  Check if specific user already exists in database
  */
 export async function checkIfUserExists(prolific_pid) {
-  const userDocRef = doc(db, "users", prolific_pid);
+  let userDocRef;
+  if (globalState.isDifficultyCheck) {
+    const setId = globalState.difficultyCheckSetId;
+    if (!setId) {
+      console.error("❌ checkIfUserExists: difficultyCheckSetId is null.");
+      return false;
+    }
+    userDocRef = doc(db, "difficulty_check_sets", `${setId}`, "users", prolific_pid);
+  } else {
+    userDocRef = doc(db, "users", prolific_pid);
+  }
   const userDocSnap = await getDoc(userDocRef);
   return userDocSnap.exists();
 }
@@ -169,6 +261,7 @@ async function saveTrialData(expRef, trial) {
     }
     await setDoc(trialRef, {
       trial_id: trial.trial_id,
+      source_trial_number: trial.source_trial_number ?? null,
       is_attention_check: trial.is_attention_check,
       is_comprehension_check: trial.is_comprehension_check,
       is_difficulty_check: trial.is_difficulty_check || false,
