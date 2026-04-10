@@ -494,9 +494,9 @@ function updateButtonVisibility(isFinished) {
 function displayTrialResults() {
   infoContent.innerHTML = `<p>Interception Complete</p>`;
 
-  const { totalValueProp, rank, interceptedCnt } = globalState.userSolution;
+  const { rank, interceptedCnt } = globalState.userSolution;
 
-  const valNow = Math.round(totalValueProp * 100);
+  const valNow = Math.max(0, 101 - rank);
   const rankNow = Math.round(rank);
   const intercepted = Math.round(interceptedCnt);
 
