@@ -505,15 +505,17 @@ function displayTrialResults() {
                      rankNow
                    )} best solution</p>`;
 
-  if (globalState.starCollected) {
-    scoreText = `<p style="color: gold; font-weight: bold;">Star collected! Score bonus!</p>` + scoreText;
-  } else if (intercepted === globalState.NUM_SELECTIONS) {
+  if (intercepted === globalState.NUM_SELECTIONS) {
     scoreText =
       `<p>Successfully intercept both selected objects</p>` + scoreText;
   } else if (intercepted === 1) {
     scoreText = `<p>Miss Object 2: out of range</p>` + scoreText;
   } else {
     scoreText = `<p>Fail to intercept either selected object</p>` + scoreText;
+  }
+
+  if (globalState.starCollected) {
+    scoreText = `<p style="color: gold; font-weight: bold;">Star collected! Score bonus!</p>` + scoreText;
   }
 
   resultInfoContent.innerHTML = scoreText;
