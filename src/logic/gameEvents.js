@@ -442,6 +442,10 @@ function startInterceptionAnimation() {
 
 function recordTrialDataStartIntercept() {
   const currentTrial = getCurrentTrialData(globalState.isComprehensionCheck);
+  if (!currentTrial) {
+    console.error(`[recordTrialDataStartIntercept] currentTrial is null — trial data was not initialized. curTrial=${globalState.curTrial}, isComprehensionCheck=${globalState.isComprehensionCheck}, experiments=${JSON.stringify(User.experiments.length)}`);
+    return;
+  }
   recordUserChoiceData(currentTrial, globalState.userSolution);
 
   const thinkTimeSec = getTimerValue("think");

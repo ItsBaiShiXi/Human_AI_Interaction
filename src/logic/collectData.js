@@ -208,7 +208,7 @@ export function getCurrentTrialData(isComprehensionCheck) {
   }
 
   // Handle difficulty check trials
-  if (globalState.isDifficultyCheck) {
+  if (globalState.isDifficultyCheck && !isComprehensionCheck) {
     if (currentExperiment.difficulty_check_trials?.length > 0) {
       return currentExperiment.difficulty_check_trials[globalState.curTrial - 1];
     }

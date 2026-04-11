@@ -143,7 +143,7 @@ function handleInstructionUnlock(pageIndex) {
   } else {
     if (timer) clearTimeout(timer);
     if (countdownInterval) clearInterval(countdownInterval);
-    let remaining = 5;
+    let remaining = 3;
     nextButton.textContent = `${originalNextText} (${remaining})`;
 
     countdownInterval = setInterval(() => {
