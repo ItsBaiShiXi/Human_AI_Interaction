@@ -13,6 +13,7 @@ import {
 } from "../data/domElements.js";
 import {
   showEndGameFailedComprehensionCheck,
+  showEndGameFailedAllAttentionCheck,
   showEnterDifficultyCheck,
   showEnterMainGame,
   showEnterRetryTrials,
@@ -42,6 +43,7 @@ import {
   getCurrentDate,
   getOrdinalSuffix,
   isAttentionCheck,
+  redirectProlificFailedAllAttentionCheck,
 } from "../utils/utils.js";
 
 /*
@@ -572,7 +574,12 @@ function handleMainMode() {
   if (isAttentionCheck()) {
     const passed = globalState.userSolution.totalValueProp * 100 === 100;
     if (!passed) {
-      showFailedAttentionCheck();
+      if (globalState.isDifficultyCheck) {
+        showEndGameFailedAllAttentionCheck();
+        redirectProlificFailedAllAttentionCheck();
+      } else {
+        showFailedAttentionCheck();
+      }
     }
   }
 }
