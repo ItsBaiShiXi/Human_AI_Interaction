@@ -13,7 +13,6 @@ import {
 } from "../data/domElements.js";
 import {
   showEndGameFailedComprehensionCheck,
-  showEndGameFailedAllAttentionCheck,
   showEnterDifficultyCheck,
   showEnterMainGame,
   showEnterRetryTrials,
@@ -43,7 +42,6 @@ import {
   getCurrentDate,
   getOrdinalSuffix,
   isAttentionCheck,
-  redirectProlificFailedAllAttentionCheck,
 } from "../utils/utils.js";
 
 /*
@@ -53,12 +51,32 @@ import {
 
 --------------------------------------------------------------------------------------
 */
+function updateProgressBar() {
+  const container = document.getElementById("progressContainer");
+  if (!container) return;
+
+  if (globalState.isComprehensionCheck) {
+    container.style.display = "none";
+    return;
+  }
+
+  const total = globalState.isDifficultyCheck
+    ? globalState.NUM_DIFFICULTY_CHECK_TRIALS
+    : globalState.NUM_MAIN_TRIALS;
+  const current = globalState.curTrial;
+  const pct = Math.min((current / total) * 100, 100);
+
+  container.style.display = "block";
+  document.getElementById("progressFill").style.width = pct + "%";
+}
+
 export async function startTrial() {
   recordPreviousTrialData();
   prepareNewTrial();
 
   console.log(`------curTrial: ${globalState.curTrial}---------`);
 
+  updateProgressBar();
   initializeTrialData();
 
   prepareUIForTrial();
@@ -500,9 +518,9 @@ function updateButtonVisibility(isFinished) {
 function displayTrialResults() {
   infoContent.innerHTML = `<p>Interception Complete</p>`;
 
-  const { rank, interceptedCnt } = globalState.userSolution;
+  const { rank, interceptedCnt, totalValueProp } = globalState.userSolution;
 
-  const valNow = Math.max(0, 101 - rank);
+  const valNow = Math.round(totalValueProp * 100);
   const rankNow = Math.round(rank);
   const intercepted = Math.round(interceptedCnt);
 
@@ -522,6 +540,10 @@ function displayTrialResults() {
 
   if (globalState.starCollected) {
     scoreText = `<p style="color: gold; font-weight: bold;">Star collected! Score bonus!</p>` + scoreText;
+  }
+
+  if (isAttentionCheck() && globalState.userSolution.totalValueProp * 100 !== 100) {
+    scoreText = `<p style="color: red; font-weight: bold;">You failed this attention check.</p>` + scoreText;
   }
 
   resultInfoContent.innerHTML = scoreText;
@@ -571,15 +593,10 @@ function handleMainMode() {
   // Show correct button
   updateButtonVisibility(globalState.curTrial === finalTrialCount);
 
-  if (isAttentionCheck()) {
+  if (isAttentionCheck() && !globalState.isDifficultyCheck) {
     const passed = globalState.userSolution.totalValueProp * 100 === 100;
     if (!passed) {
-      if (globalState.isDifficultyCheck) {
-        showEndGameFailedAllAttentionCheck();
-        redirectProlificFailedAllAttentionCheck();
-      } else {
-        showFailedAttentionCheck();
-      }
+      showFailedAttentionCheck();
     }
   }
 }

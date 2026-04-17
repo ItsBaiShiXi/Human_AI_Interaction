@@ -104,7 +104,8 @@ async function saveDifficultyCheckTrialData(experiment, trial) {
 
     if (!trial) return;
 
-    const trialRef = doc(collection(userDocRef, "trials"), `${trial.trial_id}`);
+    const subcollection = trial.is_comprehension_check ? "education_trials" : "trials";
+    const trialRef = doc(collection(userDocRef, subcollection), `${trial.trial_id}`);
     await setDoc(trialRef, {
       trial_id: trial.trial_id,
       source_trial_number: trial.source_trial_number ?? null,
@@ -293,10 +294,15 @@ async function saveTrialData(expRef, trial) {
  */
 export async function saveFeedbackData(feedbackData) {
   try {
-    const userRef = doc(db, "users", User.prolific_pid);
+    let userRef;
+    if (globalState.isDifficultyCheck) {
+      const setId = globalState.difficultyCheckSetId;
+      userRef = doc(db, "difficulty_check_sets", `${setId}`, "users", User.prolific_pid);
+    } else {
+      userRef = doc(db, "users", User.prolific_pid);
+    }
     const feedbackRef = doc(collection(userRef, "feedback"), "feedback_main");
 
-    // ✅ Save feedback + update user end_time
     await Promise.all([
       setDoc(feedbackRef, {
         ...feedbackData,

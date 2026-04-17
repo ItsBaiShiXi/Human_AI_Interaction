@@ -120,6 +120,27 @@
         width: 1210px; /* Canvas width + info width */
         margin: auto;
       }
+
+      #progressContainer {
+        width: 100%;
+        margin-bottom: 8px;
+        display: none;
+      }
+      #progressTrack {
+        width: 100%;
+        height: 8px;
+        background-color: #d0e8ff;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #99caf0;
+      }
+      #progressFill {
+        height: 100%;
+        background-color: #28a745;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        width: 0%;
+      }
     </style>
   </head>
   <body>
@@ -139,7 +160,7 @@
           <button id="replayButton" style="display: none">
             Replay Sequence
           </button>
-          <button id="aiRequest">Show AI solution</button>
+          <button id="aiRequest" style="display: none">Show AI solution</button>
           <div id="infoContent" style="text-align: left; line-height: 1.2">
             <p>
               Press the button when ready to continue. Please observe object
@@ -153,6 +174,11 @@
         </div>
 
         <div id="resultInfo">
+          <div id="progressContainer">
+            <div id="progressTrack">
+              <div id="progressFill"></div>
+            </div>
+          </div>
           <h1>Results</h1>
           <div id="resultInfoContent" style="text-align: left">
             <!-- <p>Your score: (Range: 0-100)</p>

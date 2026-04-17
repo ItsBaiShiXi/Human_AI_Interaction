@@ -284,7 +284,6 @@ export function createChoiceFromSolution(solution, ai_assisted_flag = "no_ai") {
 
   return {
     selected_objects,
-    performance: solution.totalValueProp ? solution.totalValueProp * 100 : 0,
     ai_assisted_flag,
     rank: solution.rank ?? -1,
   };

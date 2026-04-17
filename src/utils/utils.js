@@ -152,7 +152,7 @@ export function countFailedAttentionCheck() {
 export function redirectProlificCompleted() {
   setTimeout(() => {
     window.location.replace(
-      "https://app.prolific.com/submissions/complete?cc=C1221VHF"
+      "https://app.prolific.com/submissions/complete?cc=C69WH2EZ"
     );
   }, 3000);
 }
@@ -161,7 +161,7 @@ export function redirectProlificCompleted() {
 export function redirectProlificFailedAllAttentionCheck() {
   setTimeout(() => {
     window.location.replace(
-      "https://app.prolific.com/submissions/complete?cc=CVVFIIMS"
+      "https://app.prolific.com/submissions/complete?cc=C16Y6VT3"
     );
   }, 3000);
 }

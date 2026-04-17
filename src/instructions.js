@@ -258,7 +258,6 @@ export function showEnterDifficultyCheck() {
   const modalInfo = document.getElementById("modalInfo");
   modalInfo.innerHTML = `<p>
             You will now play ${globalState.NUM_DIFFICULTY_CHECK_TRIALS} difficulty check problems. <br/>
-            There will be no AI assistance. <br/>
             Please make your best effort to maximize your score.
           </p>`;
   document.getElementById("modalOverlay").style.display = "flex";
