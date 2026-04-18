@@ -112,4 +112,25 @@
         position: relative;
         width: 1210px; /* Canvas width + info width */
         margin: auto;
-      }</style><script defer="defer" src="main.bundle.js"></script></head><body><div class="container"><div id="consentContainer"></div><div id="instructionsContainer" style="display: none"></div><div id="modalContainer" style="display: none"></div><div id="experimentContainer" style="display: none"><div style="position: relative; width: 810px; height: 810px"><canvas id="gameCanvas" width="810" height="810"></canvas></div><div id="info"><h1>Instructions</h1><button id="replayButton" style="display: none">Replay Sequence</button> <button id="aiRequest">Show AI solution</button><div id="infoContent" style="text-align: left; line-height: 1.2"><p>Press the button when ready to continue. Please observe object values and movements carefully.</p></div><button id="startButton">Start Next Sequence</button> <button id="reselectButton">Reselect</button> <button id="interceptionButton">Start Interception</button> <button type="button" id="finishButton">Finish</button></div><div id="resultInfo"><h1>Results</h1><div id="resultInfoContent" style="text-align: left"></div></div><div id="aiInfo" style="display: none"><h1>AI Assistance</h1><div id="aiInfoContent" style="text-align: left"><p>Not provided in this session</p></div></div></div><div id="feedbackContainer" style="display: none"></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script></body></html>
+      }
+
+      #progressContainer {
+        width: 100%;
+        margin-bottom: 8px;
+        display: none;
+      }
+      #progressTrack {
+        width: 100%;
+        height: 8px;
+        background-color: #d0e8ff;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #99caf0;
+      }
+      #progressFill {
+        height: 100%;
+        background-color: #28a745;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+        width: 0%;
+      }</style><script defer="defer" src="main.bundle.js"></script></head><body><div class="container"><div id="consentContainer"></div><div id="instructionsContainer" style="display: none"></div><div id="modalContainer" style="display: none"></div><div id="experimentContainer" style="display: none"><div style="position: relative; width: 810px; height: 810px"><canvas id="gameCanvas" width="810" height="810"></canvas></div><div id="info"><h1>Instructions</h1><button id="replayButton" style="display: none">Replay Sequence</button> <button id="aiRequest" style="display: none">Show AI solution</button><div id="infoContent" style="text-align: left; line-height: 1.2"><p>Press the button when ready to continue. Please observe object values and movements carefully.</p></div><button id="startButton">Start Next Sequence</button> <button id="reselectButton">Reselect</button> <button id="interceptionButton">Start Interception</button> <button type="button" id="finishButton">Finish</button></div><div id="resultInfo"><div id="progressContainer"><div id="progressTrack"><div id="progressFill"></div></div></div><h1>Results</h1><div id="resultInfoContent" style="text-align: left"></div></div><div id="aiInfo" style="display: none"><h1>AI Assistance</h1><div id="aiInfoContent" style="text-align: left"><p>Not provided in this session</p></div></div></div><div id="feedbackContainer" style="display: none"></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script></body></html>
