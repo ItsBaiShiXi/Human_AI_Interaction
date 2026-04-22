@@ -52,11 +52,11 @@ import {
 --------------------------------------------------------------------------------------
 */
 function updateProgressBar() {
-  const container = document.getElementById("progressContainer");
-  if (!container) return;
+  const label = document.getElementById("progressLabel");
+  if (!label) return;
 
   if (globalState.isComprehensionCheck) {
-    container.style.display = "none";
+    label.style.display = "none";
     return;
   }
 
@@ -64,10 +64,9 @@ function updateProgressBar() {
     ? globalState.NUM_DIFFICULTY_CHECK_TRIALS
     : globalState.NUM_MAIN_TRIALS;
   const current = globalState.curTrial;
-  const pct = Math.min((current / total) * 100, 100);
 
-  container.style.display = "block";
-  document.getElementById("progressFill").style.width = pct + "%";
+  label.style.display = "block";
+  label.textContent = `Problem ${current}/${total}`;
 }
 
 export async function startTrial() {
@@ -82,10 +81,11 @@ export async function startTrial() {
   prepareUIForTrial();
   await initializeGameState();
 
-  // Backfill source_trial_number now that the trial data has been loaded
+  // Backfill fields now that objects and trial data have been loaded
   const currentTrial = getCurrentTrialData(globalState.isComprehensionCheck);
   if (currentTrial) {
     currentTrial.source_trial_number = globalState.sourceTrialNumber;
+    currentTrial.star_present = globalState.objects.some((obj) => obj.isStar === true);
   }
 
   startTrialAnimation();
@@ -524,10 +524,7 @@ function displayTrialResults() {
   const rankNow = Math.round(rank);
   const intercepted = Math.round(interceptedCnt);
 
-  let scoreText = `<p>Your score: ${valNow} (Range: 0-100)</p>
-                   <p>Your choice: ${getOrdinalSuffix(
-                     rankNow
-                   )} best solution</p>`;
+  let scoreText = `<p>Your choice: ${getOrdinalSuffix(rankNow)} best solution</p>`;
 
   if (intercepted === globalState.NUM_SELECTIONS) {
     scoreText =

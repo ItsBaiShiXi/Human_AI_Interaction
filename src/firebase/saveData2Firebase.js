@@ -128,6 +128,7 @@ async function saveDifficultyCheckTrialData(experiment, trial) {
       user_choice: trial.user_choice,
       user_collected_star: trial.user_collected_star,
       best_collected_star: trial.best_collected_star,
+      star_present: trial.star_present ?? false,
     });
     console.log(`✅ Difficulty check trial ${trial.trial_id} saved for user ${User.prolific_pid} in set ${setId}.`);
   } catch (error) {
@@ -282,6 +283,7 @@ async function saveTrialData(expRef, trial) {
       user_choice: trial.user_choice,
       user_collected_star: trial.user_collected_star,
       best_collected_star: trial.best_collected_star,
+      star_present: trial.star_present ?? false,
     });
   } catch (error) {
     console.error("❌ Failed to save trial data:", error);

@@ -91,6 +91,7 @@ export function getCurrentExperimentData() {
  * @property {boolean} is_comprehension_check
  * @property {boolean} user_collected_star // whether user collected the star during interception
  * @property {boolean} best_collected_star // whether the best solution collects the star
+ * @property {boolean} star_present // whether a star object exists in this trial's objects
  */
 /**
  * Creates a new Trial object with default values
@@ -124,6 +125,7 @@ export function createNewTrialData(
     is_attention_check: is_attention_check,
     user_collected_star: false,
     best_collected_star: false,
+    star_present: false,
   };
 }
 
