@@ -19,7 +19,13 @@
     "deploy": "npm run build && gh-pages -d dist",
     "generate-trials": "node scripts/generateTrials.mjs",
     "generate-difficulty-trials": "node scripts/generateTrials.mjs --difficulty",
-    "split-difficulty-trials": "node scripts/splitTrialsForDifficultyCheck.mjs"
+    "split-difficulty-trials": "node scripts/splitTrialsForDifficultyCheck.mjs",
+    "db:export:users": "cd scripts/firebase && node exportUsers.js",
+    "db:export:difficulty": "cd scripts/firebase && node exportDifficultyCheckSets.js",
+    "db:delete-test:users": "cd scripts/firebase && node deleteTestUsers.js",
+    "db:delete-test:difficulty": "cd scripts/firebase && node deleteTestDifficultyUsers.js",
+    "db:migrate:users": "cd scripts/firebase && node migrateUsers.js",
+    "db:migrate:difficulty": "cd scripts/firebase && node migrateDifficultyCheckSets.js"
   },
   "files": [
     "src/*"

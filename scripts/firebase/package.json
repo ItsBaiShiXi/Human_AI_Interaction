@@ -1,0 +1,16 @@
+{
+  "name": "firebase-admin-scripts",
+  "version": "1.0.0",
+  "description": "Firebase Admin SDK scripts for data management",
+  "scripts": {
+    "export:users": "node exportUsers.js",
+    "export:difficulty": "node exportDifficultyCheckSets.js",
+    "delete-test:users": "node deleteTestUsers.js",
+    "delete-test:difficulty": "node deleteTestDifficultyUsers.js",
+    "migrate:users": "node migrateUsers.js",
+    "migrate:difficulty": "node migrateDifficultyCheckSets.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.4.0"
+  }
+}

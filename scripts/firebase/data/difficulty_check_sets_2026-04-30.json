@@ -1,0 +1,130 @@
+{
+  "3": {
+    "_subcollections": {
+      "users": {
+        "test_iAvzJLqAaxcmSLs6": {
+          "is_passed_education": false,
+          "create_time": {
+            "_seconds": 1777578659,
+            "_nanoseconds": 16000000
+          },
+          "is_consent": false,
+          "difficulty_check_set_id": 3,
+          "prolific_pid": "test_iAvzJLqAaxcmSLs6",
+          "firebase_uid": "Fpo2JJAyl4RVXzmn7hgoRGuA8ko2",
+          "is_passed_all_experiments": false,
+          "failed_attention_check_count": 0,
+          "is_finished": false,
+          "end_time": {
+            "_seconds": 1777578668,
+            "_nanoseconds": 237000000
+          },
+          "_subcollections": {
+            "trials": {
+              "1": {
+                "trial_id": 1,
+                "source_trial_number": 21,
+                "is_attention_check": false,
+                "is_comprehension_check": false,
+                "is_difficulty_check": true,
+                "create_time": {
+                  "_seconds": 1777578660,
+                  "_nanoseconds": 214000000
+                },
+                "end_time": {
+                  "_seconds": 1777578668,
+                  "_nanoseconds": 237000000
+                },
+                "performance": 100,
+                "user_score": 1.3169800105941734,
+                "best_score": 1.3169800105941734,
+                "replay_num": {
+                  "before_ai_show": 0,
+                  "after_ai_show": 0,
+                  "total": 0
+                },
+                "reselect_num": {
+                  "before_ai_show": 0,
+                  "after_ai_show": 0,
+                  "total": 0
+                },
+                "think_time": {
+                  "before_ai_show": 2259,
+                  "after_ai_show": 0,
+                  "total": 2259
+                },
+                "think_time_unfocused": {
+                  "before_ai_show": 0,
+                  "after_ai_show": 0,
+                  "total": 0
+                },
+                "total_time": {
+                  "before_ai_show": 8023,
+                  "after_ai_show": 0,
+                  "total": 8023
+                },
+                "total_time_unfocused": {
+                  "before_ai_show": 0,
+                  "after_ai_show": 0,
+                  "total": 0
+                },
+                "ai_choice": [],
+                "best_choice": [
+                  {
+                    "selected_objects": [
+                      {
+                        "object_index": 1,
+                        "final_distance": 0,
+                        "is_intercepted": true,
+                        "final_value": 0.6707715545467946,
+                        "total_value": 0.6707715545467946,
+                        "ball_type": "red"
+                      },
+                      {
+                        "object_index": 5,
+                        "final_distance": 0,
+                        "is_intercepted": true,
+                        "final_value": 0.6462084560473788,
+                        "total_value": 0.6462084560473788,
+                        "ball_type": "green_turner"
+                      }
+                    ],
+                    "ai_assisted_flag": "no_ai",
+                    "rank": 1
+                  }
+                ],
+                "user_choice": [
+                  {
+                    "selected_objects": [
+                      {
+                        "object_index": 5,
+                        "final_distance": 0,
+                        "is_intercepted": true,
+                        "final_value": 0.6462084560473788,
+                        "total_value": 0.6462084560473788,
+                        "ball_type": "green_turner"
+                      },
+                      {
+                        "object_index": 1,
+                        "final_distance": 0,
+                        "is_intercepted": true,
+                        "final_value": 0.6707715545467946,
+                        "total_value": 0.6707715545467946,
+                        "ball_type": "red"
+                      }
+                    ],
+                    "ai_assisted_flag": "no_ai",
+                    "rank": 1
+                  }
+                ],
+                "user_collected_star": false,
+                "best_collected_star": false,
+                "star_present": false
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

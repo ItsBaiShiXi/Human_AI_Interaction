@@ -68,6 +68,49 @@ Add `&DEBUG=true` to skip consent for testing.
 - Failing the attention check requires 100% score; failure is recorded in `failed_attention_check_count`
 - Configuration: `ATTENTION_CHECK_TRIALS` is overridden to `{ 6: false }` at runtime in `src/index.js`
 
+### Firebase Data Management Scripts
+
+Admin scripts for exporting, cleaning, and archiving Firestore data. Located in `scripts/firebase/`.
+
+**One-time setup:**
+```bash
+# 1. Download service account key from Firebase Console →
+#    Project Settings → Service accounts → Generate new private key
+# 2. Save it as scripts/firebase/service-account-key.json
+cd scripts/firebase && npm install
+```
+
+**Export data to local JSON:**
+```bash
+npm run db:export:users       # exports `users` collection
+npm run db:export:difficulty  # exports `difficulty_check_sets` collection
+# Output: scripts/firebase/data/users_YYYY-MM-DD.json
+#         scripts/firebase/data/difficulty_check_sets_YYYY-MM-DD.json
+```
+Each script exports its collection recursively (all subcollections included). Run before any destructive operation.
+
+**Delete test/dev data:**
+```bash
+npm run db:delete-test:users       # deletes test docs from `users`
+npm run db:delete-test:difficulty  # deletes test docs from `difficulty_check_sets/{setId}/users`
+```
+Deletes all Firestore documents whose Prolific PID contains `"test"` (case-insensitive). Subcollections are deleted recursively.
+
+**Archive a completed study round:**
+```bash
+cd scripts/firebase
+node migrateUsers.js <target_collection_name>
+node migrateDifficultyCheckSets.js <target_collection_name>
+```
+Copies all data from the source collection into a new named collection. **Does not delete the source** — verify the archive in Firebase Console, then manually delete when ready.
+
+```bash
+# Example: archive after study round 1
+cd scripts/firebase
+node migrateUsers.js study_round_1_users
+node migrateDifficultyCheckSets.js study_round_1_difficulty_check_sets
+```
+
 ## Architecture Overview
 
 ### Entry Point & Flow

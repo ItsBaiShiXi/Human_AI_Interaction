@@ -6,3 +6,4 @@ node_modules
 firebase-config.js
 .env
 dist/
+service-account-key.json
