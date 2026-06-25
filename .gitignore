@@ -7,3 +7,4 @@ firebase-config.js
 .env
 dist/
 service-account-key.json
+.claude/settings.local.json
